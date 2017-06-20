@@ -5,6 +5,7 @@
 struct Particle
 {
 	Particle();
+	Particle(const Particle& other);
 	virtual ~Particle();
 
 	void Integrate(float deltaTime);

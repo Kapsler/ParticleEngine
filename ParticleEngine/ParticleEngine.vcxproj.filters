@@ -27,6 +27,9 @@
     <ClCompile Include="Solid.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="Blizzard.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Blizzard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

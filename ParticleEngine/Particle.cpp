@@ -13,6 +13,15 @@ Particle::Particle()
 	mass = 0.0f;
 }
 
+Particle::Particle(const Particle& other)
+{
+	mass = other.mass;
+	position = other.position;
+	oldPosition = other.oldPosition;
+	velocity = other.velocity;
+	acceleration = other.acceleration;
+}
+
 Particle::~Particle()
 {
 }

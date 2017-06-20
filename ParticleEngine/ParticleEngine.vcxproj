@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Blizzard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleEngine.cpp" />
@@ -150,6 +151,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Blizzard.h" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="ForceGenerators.hpp" />
