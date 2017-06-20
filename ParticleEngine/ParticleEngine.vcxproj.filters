@@ -47,7 +47,7 @@
     <ClInclude Include="Solid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BoundingVolumes.hpp">
+    <ClInclude Include="Collision.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

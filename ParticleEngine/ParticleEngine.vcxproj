@@ -150,7 +150,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BoundingVolumes.hpp" />
+    <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="ForceGenerators.hpp" />
     <ClInclude Include="Particle.h" />

@@ -14,7 +14,10 @@ public:
 	void Render(sf::RenderWindow& window);
 
 private:
-	
+	void CheckCollisions();
+	void ApplyForces();
+	void Integrate(float deltaTime);
+
 	std::vector<Particle> m_particles;
 	std::vector<Solid> m_solids;
 
