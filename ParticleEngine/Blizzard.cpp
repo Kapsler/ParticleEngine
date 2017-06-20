@@ -54,6 +54,9 @@ void Blizzard::Update(float deltaTime, ParticleEngine& engine)
 
 	if(spawnCooldown > 0.2f)
 	{
+
+		Collisions::BoundingVolumes::RotateAroundPointDegrees(&spawnPoints[0], spawnPoints.size(), position, 100.0f * deltaTime);
+
 		for(size_t i = 0u; i < spawnPoints.size(); ++i)
 		{
 			Particle particle;
@@ -61,6 +64,10 @@ void Blizzard::Update(float deltaTime, ParticleEngine& engine)
 			particle.acceleration = spawnDirections[i] * spawnVelocity;
 
 			engine.AddParticle(particle);
+
+			spawnDirections[i] = spawnPoints[i] - position;
 		}
 	}
+
+
 }
