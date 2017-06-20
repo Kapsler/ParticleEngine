@@ -2,6 +2,7 @@
 #include "Particle.h"
 #include <vector>
 #include "SFML/Graphics.hpp"
+#include "Solid.h"
 
 class ParticleEngine
 {
@@ -14,8 +15,9 @@ public:
 
 private:
 	
-	std::vector<Particle*> m_particles;
+	std::vector<Particle> m_particles;
+	std::vector<Solid> m_solids;
 
 	//Rendering Stuff
-	sf::CircleShape renderCircle;
+	std::vector<sf::Vertex> m_particleVertices;
 };

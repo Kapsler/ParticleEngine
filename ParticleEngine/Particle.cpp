@@ -23,19 +23,3 @@ void Particle::Integrate(float deltaTime)
 
 	position += velocity * deltaTime;
 }
-
-void Particle::Render(sf::RenderWindow& window, sf::CircleShape& circle)
-{
-	circle.setScale(0.6f, 0.6f);
-	circle.setPosition(position.x, position.y);
-	if(circle.getFillColor() != sf::Color::Green)
-	{
-		circle.setFillColor(sf::Color::Green);
-	}
-	if(circle.getOutlineColor() != sf::Color::Green)
-	{
-		circle.setOutlineColor(sf::Color::Green);
-	}
-	
-	window.draw(circle);
-}
