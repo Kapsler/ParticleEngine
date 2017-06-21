@@ -21,6 +21,7 @@ private:
 	glm::vec2 position;
 	float radius;
 	float spawnVelocity;
+	float spawnTime;
 	float spawnCooldown;
 	size_t spawnIndex;
 

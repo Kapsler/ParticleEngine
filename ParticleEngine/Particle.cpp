@@ -28,18 +28,19 @@ Particle::~Particle()
 
 void Particle::Integrate(float deltaTime)
 {
+
 	velocity += acceleration;
+	oldPosition = position;
+	position += velocity * deltaTime + 0.5f * acceleration * deltaTime * deltaTime;
+
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
-
-	oldPosition = position;
-	position += velocity * deltaTime;
 }
 
 bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aabb) const
 {
-	if(	position.x > aabb.points[0].x && position.x < aabb.points[2].x
-	&&	position.y > aabb.points[0].y && position.y < aabb.points[2].y)
+	if (position.x > aabb.center.x - aabb.halfSize.x && position.x < aabb.center.x + aabb.halfSize.x
+	&&	position.y > aabb.center.y - aabb.halfSize.y && position.y < aabb.center.y + aabb.halfSize.y)
 	{
 		return true;
 	}
@@ -47,15 +48,9 @@ bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aab
 	return false;
 }
 
-void Particle::ResolveCollisionWithAABB(Collisions::BoundingVolumes::BoundingBox& aabb)
-{
-	//Needs correct line!
-	glm::vec2 surface = aabb.points[1] - aabb.points[0];
+void Particle::ResolveCollision(const Collisions::Contact& contact)
+{	
+	position += contact.penetration * contact.contactNormal;
 
-	glm::vec2 surfaceNormal;
-	surfaceNormal.x = -surface.y;
-	surfaceNormal.y = surface.x;
-	surfaceNormal = glm::normalize(surfaceNormal);
-	
-	acceleration += -(2.0f * glm::dot(velocity, surfaceNormal)) * surfaceNormal;
+	acceleration += -(2.0f * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
 }

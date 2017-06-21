@@ -8,14 +8,7 @@ Solid::Solid()
 
 	sf::FloatRect rect = shape.getGlobalBounds();
 
-	aabb.points[0].x = rect.left;
-	aabb.points[0].y = rect.top;
-	aabb.points[1].x = rect.left + rect.width;
-	aabb.points[1].y = rect.top;
-	aabb.points[2].x = rect.left + rect.width;
-	aabb.points[2].y = rect.top + rect.height;
-	aabb.points[3].x = rect.left;
-	aabb.points[3].y = rect.top + rect.height;
+	UpdateBoundingVolumes();
 }
 
 void Solid::Render(sf::RenderWindow& window)
@@ -23,34 +16,33 @@ void Solid::Render(sf::RenderWindow& window)
 	window.draw(shape);
 }
 
+
+
 void Solid::SetPosition(const sf::Vector2f& newPos)
 {
 	shape.setPosition(newPos);
 
-	sf::FloatRect rect = shape.getGlobalBounds();
-
-	aabb.points[0].x = rect.left;
-	aabb.points[0].y = rect.top;
-	aabb.points[1].x = rect.left + rect.width;
-	aabb.points[1].y = rect.top;
-	aabb.points[2].x = rect.left + rect.width;
-	aabb.points[2].y = rect.top + rect.height;
-	aabb.points[3].x = rect.left;
-	aabb.points[3].y = rect.top + rect.height;
+	UpdateBoundingVolumes();
 }
 
 void Solid::SetSize(const sf::Vector2f& newSize)
 {
 	shape.setSize(newSize);
 
-	sf::FloatRect rect = shape.getGlobalBounds();
+	UpdateBoundingVolumes();
+}
 
-	aabb.points[0].x = rect.left;
-	aabb.points[0].y = rect.top;
-	aabb.points[1].x = rect.left + rect.width;
-	aabb.points[1].y = rect.top;
-	aabb.points[2].x = rect.left + rect.width;
-	aabb.points[2].y = rect.top + rect.height;
-	aabb.points[3].x = rect.left;
-	aabb.points[3].y = rect.top + rect.height;
+void Solid::UpdateBoundingVolumes()
+{
+	const sf::FloatRect& rect = shape.getGlobalBounds();
+
+	aabb.halfSize.x = rect.width * 0.5f;
+	aabb.halfSize.y = rect.height * 0.5f;
+
+	aabb.center.x = rect.left + aabb.halfSize.x;
+	aabb.center.y = rect.top + aabb.halfSize.y;
+
+	oobb.box = aabb;
+	oobb.u[0] = glm::vec2(1.0f, 0.0f);
+	oobb.u[1] = glm::vec2(0.0f, 1.0f);
 }

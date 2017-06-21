@@ -6,6 +6,7 @@ ParticleEngine::ParticleEngine()
 {
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
+	m_contacts.reserve(Config::maxParticleCount);
 	////Setting up Particles
 	//m_particles.resize(Config::maxParticleCount);
 	//m_particleVertices.resize(Config::maxParticleCount);
@@ -32,7 +33,7 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(centerPlatform);
 
 	Solid floor;
-	floor.SetPosition(sf::Vector2f(0.0f, Config::height * 0.99f));
+	floor.SetPosition(sf::Vector2f(20.0f, Config::height * 0.90f));
 	floor.SetSize(sf::Vector2f(Config::width, Config::height * 0.05f));
 	m_solids.push_back(floor);
 
@@ -55,8 +56,10 @@ void ParticleEngine::Update(float deltaTime)
 		m_blizzards[i].Update(deltaTime, *this);
 	}
 
-	CheckCollisions();
 	ApplyForces();
+	Integrate(deltaTime);
+	CheckCollisions();
+	ResolveCollisions();
 	Integrate(deltaTime);
 }
 
@@ -107,6 +110,8 @@ void ParticleEngine::AddParticle(const Particle& particle)
 
 void ParticleEngine::CheckCollisions()
 {
+	Collisions::Contact contact;
+
 	for (size_t i = 0u; i < m_particles.size(); ++i)
 	{
 		for (size_t j = 0u; j < m_solids.size(); ++j)
@@ -115,7 +120,11 @@ void ParticleEngine::CheckCollisions()
 			{
 				//Collision with AABB!
 				//printf("Collision of Particle %zd with Solid %zd.\n\r", i, j);
-				m_particles[i].ResolveCollisionWithAABB(m_solids[j].aabb);
+				if(Collisions::PointBoxCollision(m_solids[j].oobb, m_particles[i].position, contact))
+				{
+					contact.particleIndex = i;
+					m_contacts.push_back(contact);
+				}
 			}
 		}
 
@@ -137,4 +146,14 @@ void ParticleEngine::Integrate(float deltaTime)
 	{
 		m_particles[i].Integrate(deltaTime);
 	}
+}
+
+void ParticleEngine::ResolveCollisions()
+{
+	for(size_t i = 0u; i < m_contacts.size(); ++i)
+	{
+		m_particles[m_contacts[i].particleIndex].ResolveCollision(m_contacts[i]);
+	}
+
+	m_contacts.clear();
 }

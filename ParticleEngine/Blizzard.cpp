@@ -11,8 +11,8 @@ Blizzard::Blizzard(glm::vec2 position, size_t spawnCount)
 
 	for(size_t i = 0u; i < spawnCount; ++i)
 	{
-		spawnPoints[i].x = position.x + radius * cos((2.0f * 3.1415926f / static_cast<float>(spawnCount)) * i);
-		spawnPoints[i].y = position.y + radius * sin((2.0f * 3.1415926f / static_cast<float>(spawnCount)) * i);
+		spawnPoints[i].x = position.x + radius * cos((2.0f * Config::pi / static_cast<float>(spawnCount)) * i);
+		spawnPoints[i].y = position.y + radius * sin((2.0f * Config::pi / static_cast<float>(spawnCount)) * i);
 
 		spawnDirections[i] = spawnPoints[i] - position;
 	}
@@ -27,8 +27,9 @@ Blizzard::Blizzard(glm::vec2 position, size_t spawnCount)
 	}
 
 	spawnIndex = 0;
-	spawnCooldown = 0;
+	spawnTime = 0;
 	spawnVelocity = 100.0f;
+	spawnCooldown = 0.05f;
 }
 
 Blizzard::Blizzard(const Blizzard& other)
@@ -37,10 +38,11 @@ Blizzard::Blizzard(const Blizzard& other)
 	vertices = other.vertices;
 	spawnPoints = other.spawnPoints;
 	position = other.position;
-	spawnCooldown = other.spawnCooldown;
+	spawnTime = other.spawnTime;
 	spawnIndex = other.spawnIndex;
 	spawnDirections = other.spawnDirections;
 	spawnVelocity = other.spawnVelocity;
+	spawnCooldown = other.spawnCooldown;
 }
 
 void Blizzard::DebugRender(sf::RenderWindow& window)
@@ -50,12 +52,13 @@ void Blizzard::DebugRender(sf::RenderWindow& window)
 
 void Blizzard::Update(float deltaTime, ParticleEngine& engine)
 {
-	spawnCooldown += deltaTime;
+	spawnTime += deltaTime;
 
-	if(spawnCooldown > 0.2f)
+	Collisions::BoundingVolumes::RotateAroundPointRads(&spawnPoints[0], spawnPoints.size(), position, Config::pi * deltaTime);
+
+	if(spawnTime > spawnCooldown)
 	{
-
-		Collisions::BoundingVolumes::RotateAroundPointDegrees(&spawnPoints[0], spawnPoints.size(), position, 100.0f * deltaTime);
+		spawnTime -= spawnCooldown;
 
 		for(size_t i = 0u; i < spawnPoints.size(); ++i)
 		{
@@ -67,6 +70,7 @@ void Blizzard::Update(float deltaTime, ParticleEngine& engine)
 
 			spawnDirections[i] = spawnPoints[i] - position;
 		}
+
 	}
 
 

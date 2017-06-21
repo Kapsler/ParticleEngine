@@ -17,12 +17,14 @@ public:
 
 private:
 	void CheckCollisions();
+	void ResolveCollisions();
 	void ApplyForces();
 	void Integrate(float deltaTime);
 
 	std::vector<Particle> m_particles;
 	std::vector<Solid> m_solids;
 	std::vector<Blizzard> m_blizzards;
+	std::vector<Collisions::Contact> m_contacts;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;

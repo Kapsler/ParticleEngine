@@ -14,4 +14,7 @@ struct Solid
 
 	Collisions::BoundingVolumes::BoundingBox aabb;
 	Collisions::BoundingVolumes::OOBB oobb;
+
+private:
+	void UpdateBoundingVolumes();
 };

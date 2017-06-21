@@ -10,7 +10,7 @@ struct Particle
 
 	void Integrate(float deltaTime);
 	bool DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aabb) const;
-	void ResolveCollisionWithAABB(Collisions::BoundingVolumes::BoundingBox& aabb);
+	void ResolveCollision(const Collisions::Contact& contact);
 
 	glm::vec2 oldPosition;
 	glm::vec2 position;
