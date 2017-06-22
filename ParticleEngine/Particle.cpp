@@ -50,7 +50,7 @@ bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aab
 
 void Particle::ResolveCollision(const Collisions::Contact& contact)
 {	
-	position += contact.penetration * contact.contactNormal;
+	position += (contact.penetration + 0.5f) * contact.contactNormal ;
 
-	acceleration += -(2.0f * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
+	//acceleration += -(2.0f * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
 }

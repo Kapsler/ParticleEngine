@@ -60,7 +60,6 @@ void ParticleEngine::Update(float deltaTime)
 	Integrate(deltaTime);
 	CheckCollisions();
 	ResolveCollisions();
-	Integrate(deltaTime);
 }
 
 void ParticleEngine::Render(sf::RenderWindow& window)
