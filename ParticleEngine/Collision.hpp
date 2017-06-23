@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "Config.hpp"
 #include <glm/gtx/matrix_transform_2d.hpp>
+#include <cstdio>
 #define GLM_FORCE_RADIANS
 
 namespace Collisions
@@ -48,6 +49,84 @@ namespace Collisions
 				points[i].x = (Tx*cosA) - (Ty*sinA) + center.x;
 				points[i].y = (Ty*cosA) + (Tx*sinA) + center.y;
 			}
+		}
+
+		/*
+		 * Orders incoming points the following way
+		 * 
+		 * points[0] = topmost point
+		 * points[1] = rightmost point
+		 * points[2] = bottommost point
+		 * points[3] = leftmost point
+		 * 
+		 */
+		static void ReorderPoints(glm::vec2* points, const size_t pointCount)
+		{
+			glm::vec2 smallest, largest;
+
+			if (pointCount <= 0)
+			{
+				printf("No points given!");
+				return;
+			}
+
+			smallest = points[0];
+			largest = points[0];
+
+			for(size_t i = 0u; i < pointCount; ++i)
+			{
+				if (points[i].x < smallest.x)
+				{
+					smallest.x = points[i].x;
+				}
+				if (points[i].x < largest.x)
+				{
+					largest.x = points[i].x;
+				}
+				if (points[i].y < smallest.y)
+				{
+					smallest.y = points[i].y;
+				}
+				if (points[i].y > largest.y)
+				{
+					largest.y = points[i].y;
+				}
+			}
+
+			glm::vec2 topMost, rightMost, bottomMost, leftMost;
+
+			for (size_t i = 0u; i < pointCount; ++i)
+			{
+				//TopMost
+				if (points[i].y == smallest.y)
+				{
+					topMost = points[i];
+				}
+				//RightMost
+				if (points[i].x == largest.x)
+				{
+					rightMost = points[i];
+				}
+				//BottomMost
+				if (points[i].y == largest.y)
+				{
+					bottomMost = points[i];
+				}
+				//LeftMost
+				if (points[i].x == smallest.x)
+				{
+					leftMost = points[i];
+				}
+			}
+
+			points[0].x = topMost.x;
+			points[0].y = topMost.y;
+			points[1].x = rightMost.x;
+			points[1].y = rightMost.y;
+			points[2].x = bottomMost.x;
+			points[2].y = bottomMost.y;
+			points[3].x = leftMost.x;
+			points[3].y = leftMost.y;
 		}
 	}
 

@@ -28,13 +28,14 @@ ParticleEngine::ParticleEngine()
 
 	//Setting up Solid geometry
 	Solid centerPlatform;
-	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.3f, Config::height * 0.5f));
 	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.05f));
+	//centerPlatform.SetRotation(45.0f);
+	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.5f));
 	m_solids.push_back(centerPlatform);
 
 	Solid floor;
-	floor.SetPosition(sf::Vector2f(20.0f, Config::height * 0.90f));
 	floor.SetSize(sf::Vector2f(Config::width, Config::height * 0.05f));
+	floor.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.90f));
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
@@ -66,7 +67,7 @@ void ParticleEngine::Render(sf::RenderWindow& window)
 {
 	for (size_t i = 0u; i < m_solids.size(); ++i)
 	{
-		window.draw(m_solids[i].shape);
+		m_solids[i].Render(window);
 	}
 
 	for (size_t i = 0u; i < m_blizzards.size(); ++i)
