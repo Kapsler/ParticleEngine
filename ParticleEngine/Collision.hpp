@@ -9,15 +9,16 @@ namespace Collisions
 {
 	namespace BoundingVolumes
 	{
-		struct BoundingBox
+		struct AABB
 		{
-			glm::vec2 center;
-			glm::vec2 halfSize;
+			glm::vec2 min;
+			glm::vec2 max;
 		};
 
 		struct OOBB
 		{
-			BoundingBox box;
+			glm::vec2 center;
+			glm::vec2 halfSize;
 			glm::vec2 u[2]; //X and Y axis
 		};
 
@@ -132,7 +133,7 @@ namespace Collisions
 
 	struct Contact
 	{
-		size_t particleIndex;
+		size_t index;
 		glm::vec2 contactNormal;
 		float penetration;
 	};
@@ -150,18 +151,17 @@ namespace Collisions
 
 	static bool PointBoxCollision(const BoundingVolumes::OOBB& oobb, const glm::vec2& point, Contact& contact)
 	{
-		glm::vec2 relativePoint = WorldToLocal(point, oobb.box.center, oobb.u[0]);
-
+		glm::vec2 relativePoint = WorldToLocal(point, oobb.center, oobb.u[0]);
 
 		//Check axis where penetration is least deep
-		float minDepth = oobb.box.halfSize.x - abs(relativePoint.x);
+		float minDepth = oobb.halfSize.x - abs(relativePoint.x);
 		if (minDepth < 0)
 		{
 			return false;
 		}
 		glm::vec2 normal = oobb.u[0] * (relativePoint.x < 0 ? -1.0f : 1.0f);
 
-		float depth = oobb.box.halfSize.y - abs(relativePoint.y);
+		float depth = oobb.halfSize.y - abs(relativePoint.y);
 		if(depth < 0)
 		{
 			return false;
@@ -179,5 +179,46 @@ namespace Collisions
 		return true;
 
 	}
+	
+	static float SquaredDistancePointToAABB(const glm::vec2& point, const BoundingVolumes::AABB& aabb)
+	{
+		auto check = [&](
+			const float pn,
+			const float bmin,
+			const float bmax) -> float
+		{
+			float out = 0;
+			float v = pn;
+
+			if (v < bmin)
+			{
+				float val = (bmin - v);
+				out += val * val;
+			}
+
+			if (v > bmax)
+			{
+				float val = (v - bmax);
+				out += val * val;
+			}
+
+			return out;
+		};
+
+		float squaredDistance = 0.0f;
+
+		squaredDistance += check(point.x, aabb.min.x, aabb.max.x);
+		squaredDistance += check(point.y, aabb.min.y, aabb.max.y);
+
+		return squaredDistance;
+	}
+
+	static bool SphereBoxCollision(const glm::vec2& sphereCenter, const float sphereRadius, const BoundingVolumes::AABB& aabb)
+	{
+		float squaredDistance = SquaredDistancePointToAABB(sphereCenter, aabb);
+
+		return squaredDistance <= sphereRadius * sphereRadius;
+	}
+
 }
 

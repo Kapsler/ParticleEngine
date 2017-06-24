@@ -40,10 +40,10 @@ void Particle::Integrate(float deltaTime)
 	acceleration.y = 0.0f;
 }
 
-bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aabb) const
+bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::AABB& aabb) const
 {
-	if (position.x > aabb.center.x - aabb.halfSize.x && position.x < aabb.center.x + aabb.halfSize.x
-	&&	position.y > aabb.center.y - aabb.halfSize.y && position.y < aabb.center.y + aabb.halfSize.y)
+	if (position.x > aabb.min.x && position.x < aabb.max.x
+	&&	position.y > aabb.min.y && position.y < aabb.max.y)
 	{
 		return true;
 	}
@@ -53,7 +53,7 @@ bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aab
 
  bool inline Particle::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphereRadius) const
 {
-	return glm::distance(position, sphereCenter) < sphereRadius;
+	return glm::distance(position, sphereCenter) <= sphereRadius;
 }
 
 void Particle::ResolveCollision(const Collisions::Contact& contact)

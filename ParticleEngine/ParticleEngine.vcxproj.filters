@@ -27,10 +27,10 @@
     <ClCompile Include="Solid.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="Blizzard.cpp">
+    <ClCompile Include="Ball.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Ball.cpp">
+    <ClCompile Include="Blizzard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,10 +56,10 @@
     <ClInclude Include="Collision.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Blizzard.h">
+    <ClInclude Include="Ball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Ball.h">
+    <ClInclude Include="Blizzard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

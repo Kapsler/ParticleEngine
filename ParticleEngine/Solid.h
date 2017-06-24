@@ -13,7 +13,7 @@ struct Solid
 
 	sf::RectangleShape shape;
 
-	Collisions::BoundingVolumes::BoundingBox aabb;
+	Collisions::BoundingVolumes::AABB aabb;
 	Collisions::BoundingVolumes::OOBB oobb;
 
 private:

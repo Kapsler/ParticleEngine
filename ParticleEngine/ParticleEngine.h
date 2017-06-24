@@ -25,9 +25,11 @@ private:
 	std::vector<Particle> m_particles;
 	std::vector<Solid> m_solids;
 	std::vector<Blizzard> m_blizzards;
-	std::vector<Collisions::Contact> m_contacts;
+	std::vector<Collisions::Contact> m_particleContacts;
+	std::vector<Collisions::Contact> m_ballContacts;
 	std::vector<Ball> m_balls;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;
+	sf::CircleShape renderCircle;
 };
