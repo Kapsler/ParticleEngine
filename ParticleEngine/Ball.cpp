@@ -2,7 +2,9 @@
 
 Ball::Ball()
 {
-	radius = 1.0f;
+	radius = 10.0f;
+	mass = 10.0f;
+	bouncyness = 0.8f;
 }
 
 bool Ball::DoesCollideWithAABB(Collisions::BoundingVolumes::AABB& aabb) const
@@ -17,7 +19,7 @@ bool Ball::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphe
 
 void Ball::ResolveCollision(const Collisions::Contact& contact)
 {
-	position += (contact.penetration + 0.5f) * contact.contactNormal;
+	position += (contact.penetration) * contact.contactNormal;
 
 	acceleration += -((1.0f + bouncyness) * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
 }

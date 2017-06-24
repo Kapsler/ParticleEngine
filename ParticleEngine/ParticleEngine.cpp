@@ -4,23 +4,26 @@
 
 ParticleEngine::ParticleEngine()
 {
-	//Setting Up Rendering Stuff
-	renderCircle.setPointCount(15);
-	renderCircle.setRadius(1.0f);
-	renderCircle.setOutlineThickness(0.2f);
-	renderCircle.setOutlineColor(sf::Color::Yellow);
-	renderCircle.setFillColor(sf::Color::Transparent);
-
 	//Setting up Solid geometry
 	Solid centerPlatform;
-	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.05f));
+	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.02f));
 	centerPlatform.SetRotation(45.0f);
 	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.5f));
 	m_solids.push_back(centerPlatform);
 
+	//Left Wall
+	Solid wall; 
+	wall.SetSize(sf::Vector2f((float)Config::width* 0.02f, (float)Config::height));
+	wall.SetPosition(sf::Vector2f((float)Config::width * 0.0f, (float)Config::height * 0.50f));
+	m_solids.push_back(wall);
+
+	//Right Wall
+	wall.SetPosition(sf::Vector2f((float)Config::width, (float)Config::height * 0.50f));
+	m_solids.push_back(wall);
+
 	Solid floor;
-	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.05f));
-	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 0.90f));
+	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.02f));
+	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height));
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
@@ -29,15 +32,22 @@ ParticleEngine::ParticleEngine()
 
 	//Setting Up Balls
 	Ball ball1;
-	ball1.radius = 5.0f;
-	ball1.position.x = 50.0f;
-	ball1.position.y = 50.0f;
+	ball1.position.x = (float)Config::width	* 0.50f;
+	ball1.position.y = (float)Config::height * 0.10f;
 	m_balls.push_back(ball1);
 
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
 	m_particleContacts.reserve(Config::maxParticleCount);
 	m_ballContacts.reserve(Config::maxBallCount * Config::maxBallCount + Config::maxBallCount * m_solids.size());
+
+	//Setting Up Rendering Stuff
+	renderCircle.setPointCount(15);
+	renderCircle.setRadius(1.0f);
+	renderCircle.setOrigin(renderCircle.getRadius(), renderCircle.getRadius());
+	renderCircle.setOutlineThickness(1.0f / m_balls[0].radius);
+	renderCircle.setOutlineColor(sf::Color::Yellow);
+	renderCircle.setFillColor(sf::Color::Transparent);
 }
 
 ParticleEngine::~ParticleEngine()
@@ -58,6 +68,7 @@ void ParticleEngine::Update(float deltaTime)
 	Integrate(deltaTime);
 	CheckCollisions();
 	ResolveCollisions();
+	DeleteParticles();
 }
 
 void ParticleEngine::Render(sf::RenderWindow& window)
@@ -137,12 +148,13 @@ void ParticleEngine::CheckCollisions()
 		//Check Balls
 		for (size_t j = 0u; j < m_balls.size(); ++j)
 		{
-			if(m_particles[i].DoesCollideWithSphere(m_balls[j].position, m_balls[j].radius))
+			if(m_particles[i].DoesCollideWithSphere(m_balls[j].position, m_balls[j].radius + 1.0f))
 			{
-				printf("Particle %zd collided with Ball %zd\n\r", i, j);
+				m_particles[i].toBeDeleted = true;
 			}
 		}
 	}
+	
 
 	for (size_t i = 0u; i < m_balls.size(); ++i)
 	{
@@ -150,12 +162,11 @@ void ParticleEngine::CheckCollisions()
 		{
 			if (m_balls[i].DoesCollideWithAABB(m_solids[j].aabb))
 			{
-				Collisions::Contact c;
-				c.index = i;
-				c.contactNormal = glm::vec2(0.0f, -1.0f);
-				c.penetration = 0.0f;
-
-				m_ballContacts.push_back(c);
+				if(Collisions::SphereBoxCollision(m_balls[i].position, m_balls[i].radius, m_solids[j].oobb, contact))
+				{
+					contact.index = i;
+					m_ballContacts.push_back(contact);
+				}
 			}
 		}
 	}
@@ -186,6 +197,22 @@ void ParticleEngine::Integrate(float deltaTime)
 	}
 }
 
+void ParticleEngine::DeleteParticles()
+{
+	std::vector<Particle>::iterator it = m_particles.begin();
+
+	while(it != m_particles.end())
+	{
+		if(it->toBeDeleted)
+		{
+			it = m_particles.erase(it);
+		} else
+		{
+			++it;
+		}
+	}	
+}
+
 void ParticleEngine::ResolveCollisions()
 {
 	for(size_t i = 0u; i < m_particleContacts.size(); ++i)
@@ -201,4 +228,5 @@ void ParticleEngine::ResolveCollisions()
 	}
 
 	m_ballContacts.clear();
+
 }

@@ -21,6 +21,7 @@ private:
 	void ResolveCollisions();
 	void ApplyForces();
 	void Integrate(float deltaTime);
+	void DeleteParticles();
 
 	std::vector<Particle> m_particles;
 	std::vector<Solid> m_solids;

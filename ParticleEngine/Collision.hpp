@@ -2,6 +2,7 @@
 #include <glm/glm.hpp>
 #include "Config.hpp"
 #include <glm/gtx/matrix_transform_2d.hpp>
+#include <glm/gtx/norm.hpp>
 #include <cstdio>
 #define GLM_FORCE_RADIANS
 
@@ -149,6 +150,17 @@ namespace Collisions
 		return glm::inverse(boxMatrix) * glm::vec3(worldPoint.x, worldPoint.y, 1);
 	}
 
+	static glm::vec2 LocalToWorld(const glm::vec2& localPoint, const glm::vec2& localTranslation, const glm::vec2& localAxis)
+	{
+		float angle = glm::acos(glm::dot(glm::vec2(1.0f, 0.0f), localAxis));
+
+		glm::mat3x3 boxMatrix = glm::mat3x3();
+		boxMatrix = glm::translate(boxMatrix, localTranslation);
+		boxMatrix = glm::rotate(boxMatrix, angle);
+
+		return boxMatrix * glm::vec3(localPoint.x, localPoint.y, 1);
+	}
+
 	static bool PointBoxCollision(const BoundingVolumes::OOBB& oobb, const glm::vec2& point, Contact& contact)
 	{
 		glm::vec2 relativePoint = WorldToLocal(point, oobb.center, oobb.u[0]);
@@ -220,5 +232,44 @@ namespace Collisions
 		return squaredDistance <= sphereRadius * sphereRadius;
 	}
 
+	static bool SphereBoxCollision(const glm::vec2& sphereCenter, const float sphereRadius, const BoundingVolumes::OOBB& oobb, Contact& contact)
+	{
+		glm::vec2 relCenter = WorldToLocal(sphereCenter, oobb.center, oobb.u[0]);
+
+		//Early Exits
+		if(		abs(relCenter.x) - sphereRadius > oobb.halfSize.x
+			||	abs(relCenter.y) - sphereRadius > oobb.halfSize.y)
+		{
+			return false;
+		}
+
+		glm::vec2 closestPoint(0.0f, 0.0f);
+		float distance;
+
+		distance = relCenter.x;
+		if (distance > oobb.halfSize.x) distance = oobb.halfSize.x;
+		if (distance < -oobb.halfSize.x) distance = -oobb.halfSize.x;
+		closestPoint.x = distance;
+
+		distance = relCenter.y;
+		if (distance > oobb.halfSize.y) distance = oobb.halfSize.y;
+		if (distance < -oobb.halfSize.y) distance = -oobb.halfSize.y;
+		closestPoint.y = distance;
+
+		//Contact Check
+		distance = glm::distance2(closestPoint, relCenter);
+		if (distance > sphereRadius * sphereRadius)
+		{
+			return false;
+		}
+
+		//Setup contact data
+		closestPoint = LocalToWorld(closestPoint, oobb.center, oobb.u[0]);
+
+		contact.contactNormal = glm::normalize(sphereCenter - closestPoint);
+		contact.penetration = sphereRadius - sqrt(distance);
+
+		return true;
+	}
 }
 

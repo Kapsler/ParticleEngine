@@ -21,4 +21,5 @@ struct Particle
 	glm::vec2 acceleration;
 	float mass;
 	float bouncyness;
+	bool toBeDeleted : 1;
 };

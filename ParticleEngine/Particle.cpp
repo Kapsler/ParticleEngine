@@ -12,6 +12,7 @@ Particle::Particle()
 	acceleration.y = 0.0f;
 	mass = 1.0f;
 	bouncyness = 0.8f;
+	toBeDeleted = false;
 }
 
 Particle::Particle(const Particle& other)
@@ -22,6 +23,7 @@ Particle::Particle(const Particle& other)
 	velocity = other.velocity;
 	acceleration = other.acceleration;
 	bouncyness = other.bouncyness;
+	toBeDeleted = other.toBeDeleted;
 }
 
 Particle::~Particle()
@@ -30,8 +32,7 @@ Particle::~Particle()
 
 void Particle::Integrate(float deltaTime)
 {
-	assert(mass > 0.0f);
-	velocity += acceleration / mass;
+	velocity += acceleration;
 	oldPosition = position;
 	position += velocity * deltaTime + 0.5f * acceleration * deltaTime * deltaTime;
 
@@ -53,7 +54,7 @@ bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::AABB& aabb) cons
 
  bool inline Particle::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphereRadius) const
 {
-	return glm::distance(position, sphereCenter) <= sphereRadius;
+	return glm::distance(sphereCenter, position) <= sphereRadius;
 }
 
 void Particle::ResolveCollision(const Collisions::Contact& contact)
