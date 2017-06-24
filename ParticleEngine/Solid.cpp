@@ -14,8 +14,6 @@ Solid::Solid()
 void Solid::Render(sf::RenderWindow& window)
 {
 	window.draw(shape);
-
-	RenderOOBB(window);
 }
 
 
@@ -44,6 +42,16 @@ void Solid::SetRotation(const float newRotation)
 
 void Solid::UpdateBoundingVolumes()
 {
+	//AABB
+	auto rect = shape.getGlobalBounds();
+
+	aabb.halfSize.x = rect.width * 0.5f;
+	aabb.halfSize.y = rect.height * 0.5f;
+
+	aabb.center.x = rect.left + aabb.halfSize.x;
+	aabb.center.y = rect.top + aabb.halfSize.y;
+
+	//OOBB
 	glm::vec2 points[4];
 
 	points[0].x = shape.getTransform().transformPoint(shape.getPoint(0)).x;
@@ -55,15 +63,12 @@ void Solid::UpdateBoundingVolumes()
 	points[3].x = shape.getTransform().transformPoint(shape.getPoint(3)).x;
 	points[3].y = shape.getTransform().transformPoint(shape.getPoint(3)).y;
 
-	//Collisions::BoundingVolumes::ReorderPoints(points, 4);
+	oobb.box.halfSize.x = shape.getSize().x * 0.5f;
+	oobb.box.halfSize.y = shape.getSize().y * 0.5f;
 
-	aabb.halfSize.x = shape.getSize().x * 0.5f;
-	aabb.halfSize.y = shape.getSize().y * 0.5f;
+	oobb.box.center.x = points[3].x + aabb.halfSize.x;
+	oobb.box.center.y = points[0].y + aabb.halfSize.y;
 
-	aabb.center.x = points[3].x + aabb.halfSize.x;
-	aabb.center.y = points[0].y + aabb.halfSize.y;
-
-	oobb.box = aabb;
 	oobb.u[0] = glm::normalize(points[1] - points[0]);
 	oobb.u[1] = glm::normalize(points[3] - points[0]);
 }

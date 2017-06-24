@@ -10,7 +10,8 @@ Particle::Particle()
 	velocity.y = 0.0f;
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
-	mass = 0.0f;
+	mass = 1.0f;
+	bouncyness = 0.8f;
 }
 
 Particle::Particle(const Particle& other)
@@ -20,6 +21,7 @@ Particle::Particle(const Particle& other)
 	oldPosition = other.oldPosition;
 	velocity = other.velocity;
 	acceleration = other.acceleration;
+	bouncyness = other.bouncyness;
 }
 
 Particle::~Particle()
@@ -28,10 +30,11 @@ Particle::~Particle()
 
 void Particle::Integrate(float deltaTime)
 {
-
-	velocity += acceleration;
+	assert(mass > 0.0f);
+	velocity += acceleration / mass;
 	oldPosition = position;
 	position += velocity * deltaTime + 0.5f * acceleration * deltaTime * deltaTime;
+
 
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
@@ -48,9 +51,14 @@ bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::BoundingBox& aab
 	return false;
 }
 
+ bool inline Particle::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphereRadius) const
+{
+	return glm::distance(position, sphereCenter) < sphereRadius;
+}
+
 void Particle::ResolveCollision(const Collisions::Contact& contact)
 {	
 	position += (contact.penetration + 0.5f) * contact.contactNormal;
 
-	acceleration += -(2.0f * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
+	acceleration += -((1.0f + bouncyness) * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
 }

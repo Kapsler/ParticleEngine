@@ -7,29 +7,11 @@ ParticleEngine::ParticleEngine()
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
 	m_contacts.reserve(Config::maxParticleCount);
-	////Setting up Particles
-	//m_particles.resize(Config::maxParticleCount);
-	//m_particleVertices.resize(Config::maxParticleCount);
-
-	//float particleStep = float(Config::width) / float(Config::maxParticleCount + 1);
-
-	//for (size_t i = 0u; i < Config::maxParticleCount; ++i)
-	//{
-	//	float posX = particleStep * (i + 1);
-	//	float posY = 0.0f;
-
-	//	m_particles[i].position.x = posX;
-	//	m_particles[i].position.y = posY;
-
-	//	m_particleVertices[i].position.x = posX;
-	//	m_particleVertices[i].position.y = posY;
-	//	m_particleVertices[i].color = sf::Color::Green;
-	//}
 
 	//Setting up Solid geometry
 	Solid centerPlatform;
 	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.05f));
-	//centerPlatform.SetRotation(45.0f);
+	centerPlatform.SetRotation(45.0f);
 	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.5f));
 	m_solids.push_back(centerPlatform);
 
@@ -41,6 +23,9 @@ ParticleEngine::ParticleEngine()
 	//Setting up blizzards
 	Blizzard b1(glm::vec2(Config::width * 0.75f, Config::height * 0.25f), 10);
 	m_blizzards.push_back(b1);
+
+	//Setting Up Balls
+	
 }
 
 ParticleEngine::~ParticleEngine()
@@ -119,9 +104,9 @@ void ParticleEngine::CheckCollisions()
 			if (m_particles[i].DoesCollideWithAABB(m_solids[j].aabb))
 			{
 				//Collision with AABB!
-				//printf("Collision of Particle %zd with Solid %zd.\n\r", i, j);
 				if(Collisions::PointBoxCollision(m_solids[j].oobb, m_particles[i].position, contact))
 				{
+					//OOBB Collision!
 					contact.particleIndex = i;
 					m_contacts.push_back(contact);
 				}

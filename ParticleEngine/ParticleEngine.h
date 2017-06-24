@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "Solid.h"
 #include "Blizzard.h"
+#include "Ball.h"
 
 class ParticleEngine
 {
@@ -25,6 +26,7 @@ private:
 	std::vector<Solid> m_solids;
 	std::vector<Blizzard> m_blizzards;
 	std::vector<Collisions::Contact> m_contacts;
+	std::vector<Ball> m_balls;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;

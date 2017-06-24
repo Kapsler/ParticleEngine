@@ -64,7 +64,7 @@ void Blizzard::Update(float deltaTime, ParticleEngine& engine)
 		{
 			Particle particle;
 			particle.position = spawnPoints[i];
-			particle.acceleration = spawnDirections[i] * spawnVelocity;
+			particle.velocity = spawnDirections[i] * spawnVelocity;
 
 			engine.AddParticle(particle);
 
