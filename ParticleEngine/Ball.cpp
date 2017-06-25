@@ -19,7 +19,7 @@ bool Ball::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphe
 
 void Ball::ResolveCollision(const Collisions::Contact& contact)
 {
-	position += (contact.penetration) * contact.contactNormal;
+	position += (contact.penetration + 0.5f) * contact.contactNormal;
 
 	acceleration += -((1.0f + bouncyness) * glm::dot(velocity, contact.contactNormal)) * contact.contactNormal;
 }

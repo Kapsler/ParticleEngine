@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
     <ClCompile Include="Blizzard.cpp" />
+    <ClCompile Include="Fan.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle.cpp" />
     <ClCompile Include="ParticleEngine.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="Blizzard.h" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Config.hpp" />
+    <ClInclude Include="Fan.h" />
     <ClInclude Include="ForceGenerators.hpp" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="ParticleEngine.h" />

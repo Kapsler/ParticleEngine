@@ -271,5 +271,23 @@ namespace Collisions
 
 		return true;
 	}
+
+	static bool SphereSphereCollision(const glm::vec2& sphere1Center, const float sphere1Radius, const glm::vec2& sphere2Center, const float sphere2Radius, Contact& contact)
+	{
+		glm::vec2 midline = (sphere2Center - sphere1Center);
+		float distance = glm::length(midline);
+
+		if(distance < 0.0f || distance >= sphere1Radius + sphere2Radius)
+		{
+			return false;
+		}
+
+		glm::vec2 normal = midline * (1.0f / distance);
+
+		contact.contactNormal;
+		contact.penetration = (sphere1Radius + sphere2Radius) - distance;
+
+		return true;
+	}
 }
 

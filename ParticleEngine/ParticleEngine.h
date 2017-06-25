@@ -5,6 +5,7 @@
 #include "Solid.h"
 #include "Blizzard.h"
 #include "Ball.h"
+#include "Fan.h"
 
 class ParticleEngine
 {
@@ -29,6 +30,7 @@ private:
 	std::vector<Collisions::Contact> m_particleContacts;
 	std::vector<Collisions::Contact> m_ballContacts;
 	std::vector<Ball> m_balls;
+	std::vector<Fan> m_fans;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;

@@ -36,7 +36,6 @@ void Particle::Integrate(float deltaTime)
 	oldPosition = position;
 	position += velocity * deltaTime + 0.5f * acceleration * deltaTime * deltaTime;
 
-
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
 }

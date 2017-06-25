@@ -3,7 +3,7 @@
 Solid::Solid()
 {
 	shape.setFillColor(sf::Color::Transparent);
-	shape.setOutlineColor(sf::Color::Blue);
+	shape.setOutlineColor(sf::Color::Cyan);
 	shape.setOutlineThickness(1.0f);
 
 	sf::FloatRect rect = shape.getGlobalBounds();

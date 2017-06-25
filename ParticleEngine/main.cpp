@@ -6,6 +6,7 @@ void main()
 {
 	sf::RenderWindow window(sf::VideoMode(Config::width, Config::height), "Particle Engine");
 	window.setVerticalSyncEnabled(Config::useVsync);
+	window.setFramerateLimit(60u);
 
 	sf::Clock frameTimer;
 	float fpsDisplayDelay = 0.0f;

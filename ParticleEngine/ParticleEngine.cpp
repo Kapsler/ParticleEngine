@@ -6,7 +6,7 @@ ParticleEngine::ParticleEngine()
 {
 	//Setting up Solid geometry
 	Solid centerPlatform;
-	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.02f));
+	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.05f));
 	centerPlatform.SetRotation(45.0f);
 	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.5f));
 	m_solids.push_back(centerPlatform);
@@ -21,9 +21,14 @@ ParticleEngine::ParticleEngine()
 	wall.SetPosition(sf::Vector2f((float)Config::width, (float)Config::height * 0.50f));
 	m_solids.push_back(wall);
 
+	//floor
 	Solid floor;
 	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.02f));
 	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height));
+	m_solids.push_back(floor);
+
+	//ceiling
+	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 0.0f));
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
@@ -35,6 +40,15 @@ ParticleEngine::ParticleEngine()
 	ball1.position.x = (float)Config::width	* 0.50f;
 	ball1.position.y = (float)Config::height * 0.10f;
 	m_balls.push_back(ball1);
+
+	Ball ball2;
+	ball2.position.x = (float)Config::width	* 0.50f;
+	ball2.position.y = (float)Config::height * 0.05f;
+	m_balls.push_back(ball2);
+
+	//Setting up Fans
+	Fan fan1(glm::vec2(Config::width * 0.95f, Config::height * 0.15f), glm::vec2(Config::width * 0.95f, Config::height * 0.35f), 10.0f);
+	m_fans.push_back(fan1);
 
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
@@ -83,6 +97,11 @@ void ParticleEngine::Render(sf::RenderWindow& window)
 		m_blizzards[i].DebugRender(window);
 	}
 
+	for (size_t i = 0u; i < m_fans.size(); ++i)
+	{
+		m_fans[i].Render(window);
+	}
+
 	//Balls
 	for (size_t i = 0u; i < m_balls.size(); ++i)
 	{
@@ -120,7 +139,7 @@ void ParticleEngine::AddParticle(const Particle& particle)
 	sf::Vertex vertex;
 	vertex.position.x = particle.position.x;
 	vertex.position.y = particle.position.y;
-	vertex.color = sf::Color::Green;
+	vertex.color = sf::Color::White;
 
 	m_particleVertices.push_back(vertex);
 }
@@ -153,11 +172,17 @@ void ParticleEngine::CheckCollisions()
 				m_particles[i].toBeDeleted = true;
 			}
 		}
+
+		for (size_t j = 0u; j < m_fans.size(); ++j)
+		{
+			m_fans[j].InfluenceParticle(m_particles[i]);
+		}
 	}
 	
 
 	for (size_t i = 0u; i < m_balls.size(); ++i)
 	{
+		//Solids
 		for (size_t j = 0u; j < m_solids.size(); ++j)
 		{
 			if (m_balls[i].DoesCollideWithAABB(m_solids[j].aabb))
@@ -169,6 +194,25 @@ void ParticleEngine::CheckCollisions()
 				}
 			}
 		}
+
+		//Collision Between balls O(N * log(N))
+		for (size_t j = i+1; j < m_balls.size(); ++j)
+		{
+			if (Collisions::SphereSphereCollision(m_balls[i].position, m_balls[i].radius, m_balls[j].position, m_balls[j].radius, contact))
+			{
+				contact.index = i;
+				m_ballContacts.push_back(contact);
+				contact.index = j;
+				contact.contactNormal *= -1;
+				m_ballContacts.push_back(contact);
+			}
+		}
+
+		//Fans
+		for (size_t j = 0u; j < m_fans.size(); ++j)
+		{
+			m_fans[j].InfluenceParticle(m_balls[i]);
+		}
 	}
 
 }
@@ -178,10 +222,12 @@ void ParticleEngine::ApplyForces()
 	for (size_t i = 0u; i < m_particles.size(); ++i)
 	{
 		ForceGenerators::ApplyGravity(m_particles[i]);
+		ForceGenerators::ApplyAirDrag(m_particles[i]);
 	}
 	for (size_t i = 0u; i < m_balls.size(); ++i)
 	{
 		ForceGenerators::ApplyGravity(m_balls[i]);
+		ForceGenerators::ApplyAirDrag(m_balls[i]);
 	}
 }
 
@@ -200,15 +246,18 @@ void ParticleEngine::Integrate(float deltaTime)
 void ParticleEngine::DeleteParticles()
 {
 	std::vector<Particle>::iterator it = m_particles.begin();
+	std::vector<sf::Vertex>::iterator vit = m_particleVertices.begin();
 
 	while(it != m_particles.end())
 	{
 		if(it->toBeDeleted)
 		{
 			it = m_particles.erase(it);
+			vit = m_particleVertices.erase(vit);
 		} else
 		{
 			++it;
+			++vit;
 		}
 	}	
 }
