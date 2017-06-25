@@ -6,14 +6,14 @@ ParticleEngine::ParticleEngine()
 {
 	//Setting up Solid geometry
 	Solid centerPlatform;
-	centerPlatform.SetSize(sf::Vector2f(Config::width * 0.3f, Config::height * 0.05f));
+	centerPlatform.SetSize(sf::Vector2f((float)Config::width * 0.3f, (float)Config::height * 0.05f));
 	centerPlatform.SetRotation(45.0f);
-	centerPlatform.SetPosition(sf::Vector2f(Config::width * 0.5f, Config::height * 0.5f));
+	centerPlatform.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 0.5f));
 	m_solids.push_back(centerPlatform);
 
 	//Left Wall
 	Solid wall; 
-	wall.SetSize(sf::Vector2f((float)Config::width* 0.02f, (float)Config::height));
+	wall.SetSize(sf::Vector2f((float)Config::width* 0.05f, (float)Config::height));
 	wall.SetPosition(sf::Vector2f((float)Config::width * 0.0f, (float)Config::height * 0.50f));
 	m_solids.push_back(wall);
 
@@ -23,7 +23,7 @@ ParticleEngine::ParticleEngine()
 
 	//floor
 	Solid floor;
-	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.02f));
+	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.05f));
 	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height));
 	m_solids.push_back(floor);
 
@@ -32,7 +32,7 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
-	Blizzard blizzard1(glm::vec2(Config::width * 0.75f, Config::height * 0.25f), 10);
+	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 10);
 	m_blizzards.push_back(blizzard1);
 
 	//Setting Up Balls
@@ -47,7 +47,7 @@ ParticleEngine::ParticleEngine()
 	m_balls.push_back(ball2);
 
 	//Setting up Fans
-	Fan fan1(glm::vec2(Config::width * 0.95f, Config::height * 0.15f), glm::vec2(Config::width * 0.95f, Config::height * 0.35f), 10.0f);
+	Fan fan1(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.35f), 10.0f);
 	m_fans.push_back(fan1);
 
 	m_particleVertices.reserve(Config::maxParticleCount);
