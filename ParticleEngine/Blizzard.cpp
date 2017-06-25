@@ -26,7 +26,6 @@ Blizzard::Blizzard(glm::vec2 position, size_t spawnCount)
 		vertices[i].color = sf::Color::Red;
 	}
 
-	spawnIndex = 0;
 	spawnTime = 0;
 	spawnVelocity = 100.0f;
 	spawnCooldown = 0.05f;
@@ -39,7 +38,6 @@ Blizzard::Blizzard(const Blizzard& other)
 	spawnPoints = other.spawnPoints;
 	position = other.position;
 	spawnTime = other.spawnTime;
-	spawnIndex = other.spawnIndex;
 	spawnDirections = other.spawnDirections;
 	spawnVelocity = other.spawnVelocity;
 	spawnCooldown = other.spawnCooldown;

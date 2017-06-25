@@ -7,8 +7,13 @@ ParticleEngine::ParticleEngine()
 	//Setting up Solid geometry
 	Solid centerPlatform;
 	centerPlatform.SetSize(sf::Vector2f((float)Config::width * 0.3f, (float)Config::height * 0.05f));
-	centerPlatform.SetRotation(45.0f);
+	centerPlatform.SetRotation(15.0f);
 	centerPlatform.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 0.5f));
+	m_solids.push_back(centerPlatform);
+
+	//BottemLeft Platform
+	centerPlatform.SetRotation(45.0f);
+	centerPlatform.SetPosition(sf::Vector2f((float)Config::width * 0.1f, (float)Config::height * 0.8f));
 	m_solids.push_back(centerPlatform);
 
 	//Left Wall
@@ -32,19 +37,12 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
-	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 10);
+	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 20);
 	m_blizzards.push_back(blizzard1);
 
-	//Setting Up Balls
-	Ball ball1;
-	ball1.position.x = (float)Config::width	* 0.50f;
-	ball1.position.y = (float)Config::height * 0.10f;
-	m_balls.push_back(ball1);
-
-	Ball ball2;
-	ball2.position.x = (float)Config::width	* 0.50f;
-	ball2.position.y = (float)Config::height * 0.05f;
-	m_balls.push_back(ball2);
+	//Setting Up BallGenerator
+	BallGenerator ballGen1(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.15f), 10.0f);
+	m_ballGenerators.push_back(ballGen1);
 
 	//Setting up Fans
 	Fan fan1(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.35f), 10.0f);
@@ -59,23 +57,25 @@ ParticleEngine::ParticleEngine()
 	renderCircle.setPointCount(15);
 	renderCircle.setRadius(1.0f);
 	renderCircle.setOrigin(renderCircle.getRadius(), renderCircle.getRadius());
-	renderCircle.setOutlineThickness(1.0f / m_balls[0].radius);
+	renderCircle.setOutlineThickness(1.0f / 10.0f);
 	renderCircle.setOutlineColor(sf::Color::Yellow);
 	renderCircle.setFillColor(sf::Color::Transparent);
 }
 
 ParticleEngine::~ParticleEngine()
 {
-	m_particles.clear();
-	m_particleVertices.clear();
-	m_solids.clear();
 }
 
 void ParticleEngine::Update(float deltaTime)
 {
-	for(size_t i = 0u; i < m_blizzards.size(); ++i)
+	for (size_t i = 0u; i < m_blizzards.size(); ++i)
 	{
 		m_blizzards[i].Update(deltaTime, *this);
+	}
+
+	for (size_t i = 0u; i < m_ballGenerators.size(); ++i)
+	{
+		m_ballGenerators[i].Update(deltaTime, *this);
 	}
 
 	ApplyForces();
@@ -142,6 +142,16 @@ void ParticleEngine::AddParticle(const Particle& particle)
 	vertex.color = sf::Color::White;
 
 	m_particleVertices.push_back(vertex);
+}
+
+void ParticleEngine::AddBall(const Ball& ball)
+{
+	if (m_balls.size() + 1 > Config::maxBallCount)
+	{
+		m_balls.erase(m_balls.begin());
+	}
+
+	m_balls.push_back(ball);
 }
 
 void ParticleEngine::CheckCollisions()

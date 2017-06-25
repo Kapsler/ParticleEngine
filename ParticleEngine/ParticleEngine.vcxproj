@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="BallGenerator.cpp" />
     <ClCompile Include="Blizzard.cpp" />
     <ClCompile Include="Fan.cpp" />
     <ClCompile Include="main.cpp" />
@@ -155,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="BallGenerator.h" />
     <ClInclude Include="Blizzard.h" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Config.hpp" />

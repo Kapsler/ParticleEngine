@@ -6,6 +6,7 @@
 #include "Blizzard.h"
 #include "Ball.h"
 #include "Fan.h"
+#include "BallGenerator.h"
 
 class ParticleEngine
 {
@@ -16,6 +17,7 @@ public:
 	void Update(float deltaTime);
 	void Render(sf::RenderWindow& window);
 	void AddParticle(const Particle& particle);
+	void AddBall(const Ball& ball);
 
 private:
 	void CheckCollisions();
@@ -31,6 +33,7 @@ private:
 	std::vector<Collisions::Contact> m_ballContacts;
 	std::vector<Ball> m_balls;
 	std::vector<Fan> m_fans;
+	std::vector<BallGenerator> m_ballGenerators;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;

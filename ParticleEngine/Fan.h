@@ -15,6 +15,7 @@ public:
 	void Render(sf::RenderWindow& window);
 	void InfluenceParticle(Particle& particle);
 
+private:
 	//Start and Endpoint
 	glm::vec2 points[2];
 	glm::vec2 fanVec;

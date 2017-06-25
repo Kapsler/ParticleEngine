@@ -4,7 +4,12 @@
 
 void main()
 {
-	sf::RenderWindow window(sf::VideoMode(Config::width, Config::height), "Particle Engine");
+	sf::ContextSettings settings;
+	settings.majorVersion = 4;
+	settings.minorVersion = 4;
+	settings.antialiasingLevel = 8;
+
+	sf::RenderWindow window(sf::VideoMode(Config::width, Config::height), "Particle Engine", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(Config::useVsync);
 	window.setFramerateLimit(60u);
 

@@ -23,7 +23,6 @@ private:
 	float spawnVelocity;
 	float spawnTime;
 	float spawnCooldown;
-	size_t spawnIndex;
 
 	//Renderstuff
 	std::vector<sf::Vertex> vertices;
