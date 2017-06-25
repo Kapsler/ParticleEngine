@@ -69,7 +69,7 @@ ParticleEngine::ParticleEngine()
 	renderCircle.setOutlineColor(sf::Color::Yellow);
 	renderCircle.setFillColor(sf::Color::Transparent);
 
-	GenerateCloth(10.0f, glm::vec2((float)Config::width * 0.05f, (float)Config::height * 0.15f), 5.0f);
+	GenerateCloth(10.0f, glm::vec2((float)Config::width * 0.15f, (float)Config::height * 0.05f), 5.0f);
 }
 
 ParticleEngine::~ParticleEngine()
@@ -342,6 +342,40 @@ void ParticleEngine::CheckCollisions()
 		}
 	}
 
+	for (size_t i = Config::clothColumns; i < m_cloth.size(); ++i)
+	{
+
+		//Solids
+		for (size_t j = 0u; j < m_solids.size(); ++j)
+		{
+			if (Collisions::SphereBoxCollision(m_cloth[i].position, m_cloth[i].radius, m_solids[j].aabb))
+			{
+				if (Collisions::SphereBoxCollision(m_cloth[i].position, m_cloth[i].radius, m_solids[j].oobb, contact))
+				{
+					contact.index = i;
+					m_clothContacts.push_back(contact);
+				}
+			}
+		}
+
+		for (size_t j = i; j < m_cloth.size(); ++j)
+		{
+			if (Collisions::SphereSphereCollision(m_cloth[i].position, m_cloth[i].radius, m_cloth[j].position, m_cloth[j].radius, contact))
+			{
+				contact.index = i;
+				m_clothContacts.push_back(contact);
+
+				contact.index = j;
+				contact.contactNormal *= -1.0f;
+				m_clothContacts.push_back(contact);
+			}
+		}
+
+		for (size_t j = 0u; j < m_fans.size(); ++j)
+		{
+			m_fans[j].InfluenceParticle(m_cloth[i]);
+		}
+	}
 }
 
 void ParticleEngine::ApplyForces()
@@ -418,4 +452,10 @@ void ParticleEngine::ResolveCollisions()
 
 	m_ballContacts.clear();
 
+	for (size_t i = 0u; i < m_clothContacts.size(); ++i)
+	{
+		m_cloth[m_clothContacts[i].index].ResolveCollision(m_clothContacts[i]);
+	}
+
+	m_clothContacts.clear();
 }

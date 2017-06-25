@@ -29,16 +29,24 @@ private:
 	void Integrate(float deltaTime);
 	void DeleteParticles();
 
-	std::vector<Particle> m_particles;
-	std::vector<Solid> m_solids;
+	//Spawners
 	std::vector<Blizzard> m_blizzards;
+	std::vector<BallGenerator> m_ballGenerators;
+
+	//Dynamics
+	std::vector<Solid> m_solids;
+	std::vector<Particle> m_particles;
+	std::vector<Ball> m_balls;
+	std::vector<Ball> m_cloth;
+
+	//Forces
+	std::vector<Fan> m_fans;
+	std::vector<ForceGenerators::SpringContraint> m_springs;
+
+	//Collisions
 	std::vector<Collisions::Contact> m_particleContacts;
 	std::vector<Collisions::Contact> m_ballContacts;
-	std::vector<Ball> m_balls;
-	std::vector<Fan> m_fans;
-	std::vector<BallGenerator> m_ballGenerators;
-	std::vector<ForceGenerators::SpringContraint> m_springs;
-	std::vector<Ball> m_cloth;
+	std::vector<Collisions::Contact> m_clothContacts;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;
