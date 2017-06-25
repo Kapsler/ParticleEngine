@@ -7,6 +7,7 @@
 #include "Ball.h"
 #include "Fan.h"
 #include "BallGenerator.h"
+#include "ForceGenerators.hpp"
 
 class ParticleEngine
 {
@@ -20,6 +21,8 @@ public:
 	void AddBall(const Ball& ball);
 
 private:
+	void AddSpringContraint(size_t p1Index, size_t p2Index);
+	void GenerateCloth(const float ballRadius, const glm::vec2& startPosition, const float spacing);
 	void CheckCollisions();
 	void ResolveCollisions();
 	void ApplyForces();
@@ -34,8 +37,11 @@ private:
 	std::vector<Ball> m_balls;
 	std::vector<Fan> m_fans;
 	std::vector<BallGenerator> m_ballGenerators;
+	std::vector<ForceGenerators::SpringContraint> m_springs;
+	std::vector<Ball> m_cloth;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;
+	std::vector<sf::Vertex> m_springVertices;
 	sf::CircleShape renderCircle;
 };
