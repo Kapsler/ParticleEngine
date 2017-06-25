@@ -10,10 +10,7 @@ struct Particle
 
 	void Integrate(float deltaTime);
 
-	virtual bool DoesCollideWithAABB(Collisions::BoundingVolumes::AABB& aabb) const;
-	virtual inline bool DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphereRadius) const;
-
-	virtual void ResolveCollision(const Collisions::Contact& contact);
+	void ResolveCollision(const Collisions::Contact& contact);
 
 	glm::vec2 oldPosition;
 	glm::vec2 position;

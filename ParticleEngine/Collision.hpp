@@ -139,6 +139,50 @@ namespace Collisions
 		float penetration;
 	};
 
+	static glm::vec2 saveNormalize(const glm::vec2& vector)
+	{
+		glm::vec2 normal = glm::normalize(vector);
+
+		if(normal.x == NAN || normal.y == NAN)
+		{
+			normal.x = 0.0f;
+			normal.y = 0.0f;
+		}
+
+		assert(normal.x != NAN);
+		assert(normal.y != NAN);
+
+		return normal;
+	}
+
+	static float saveLength(const glm::vec2& vector)
+	{
+		float length = glm::length(vector);
+
+		if (length == NAN)
+		{
+			length = 0.0f;
+		}
+
+		assert(length != NAN);
+
+		return length;
+	}
+
+	static float saveDistance(const glm::vec2& p1, const glm::vec2& p2)
+	{
+		float distance = glm::distance(p1, p2);
+
+		if (distance == NAN)
+		{
+			distance = 0.0f;
+		}
+
+		assert(distance != NAN);
+
+		return distance;
+	}
+
 	static glm::vec2 WorldToLocal(const glm::vec2& worldPoint, const glm::vec2& localTranslation, const glm::vec2& localAxis)
 	{
 		float angle = glm::acos(glm::dot(glm::vec2(1.0f, 0.0f), localAxis));
@@ -159,6 +203,22 @@ namespace Collisions
 		boxMatrix = glm::rotate(boxMatrix, angle);
 
 		return boxMatrix * glm::vec3(localPoint.x, localPoint.y, 1);
+	}
+
+	static bool PointBoxCollision(const glm::vec2& point, const BoundingVolumes::AABB& aabb)
+	{
+		if (point.x > aabb.min.x && point.x < aabb.max.x
+			&&	point.y > aabb.min.y && point.y < aabb.max.y)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static bool PointSphereCollision(const glm::vec2& point, const glm::vec2& sphereCenter, const float sphereRadius)
+	{
+		return saveDistance(sphereCenter, point) < sphereRadius;
 	}
 
 	static bool PointBoxCollision(const BoundingVolumes::OOBB& oobb, const glm::vec2& point, Contact& contact)
@@ -229,7 +289,7 @@ namespace Collisions
 	{
 		float squaredDistance = SquaredDistancePointToAABB(sphereCenter, aabb);
 
-		return squaredDistance <= sphereRadius * sphereRadius;
+		return squaredDistance < sphereRadius * sphereRadius;
 	}
 
 	static bool SphereBoxCollision(const glm::vec2& sphereCenter, const float sphereRadius, const BoundingVolumes::OOBB& oobb, Contact& contact)
@@ -243,7 +303,7 @@ namespace Collisions
 			return false;
 		}
 
-		glm::vec2 closestPoint(0.0f, 0.0f);
+		glm::vec2 closestPoint;
 		float distance;
 
 		distance = relCenter.x;
@@ -257,8 +317,8 @@ namespace Collisions
 		closestPoint.y = distance;
 
 		//Contact Check
-		distance = glm::distance2(closestPoint, relCenter);
-		if (distance > sphereRadius * sphereRadius)
+		distance = saveLength(closestPoint - relCenter);
+		if (distance < 0 || distance > sphereRadius)
 		{
 			return false;
 		}
@@ -266,8 +326,8 @@ namespace Collisions
 		//Setup contact data
 		closestPoint = LocalToWorld(closestPoint, oobb.center, oobb.u[0]);
 
-		contact.contactNormal = glm::normalize(sphereCenter - closestPoint);
-		contact.penetration = sphereRadius - sqrt(distance);
+		contact.contactNormal = saveNormalize(sphereCenter - closestPoint);
+		contact.penetration = sphereRadius - distance;
 
 		return true;
 	}
@@ -275,19 +335,19 @@ namespace Collisions
 	static bool SphereSphereCollision(const glm::vec2& sphere1Center, const float sphere1Radius, const glm::vec2& sphere2Center, const float sphere2Radius, Contact& contact)
 	{
 		glm::vec2 midline = (sphere2Center - sphere1Center);
-		float distance = glm::length(midline);
+		float distance = saveLength(midline);
 
-		if(distance < 0.0f || distance >= sphere1Radius + sphere2Radius)
+		if(distance < 0.0f || distance > sphere1Radius + sphere2Radius)
 		{
 			return false;
 		}
-
-		glm::vec2 normal = midline * (1.0f / distance);
-
-		contact.contactNormal;
+		
+		contact.contactNormal = saveNormalize(midline);
 		contact.penetration = (sphere1Radius + sphere2Radius) - distance;
 
 		return true;
 	}
+
+	
 }
 

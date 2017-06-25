@@ -1,17 +1,24 @@
 #include <SFML/Graphics.hpp>
 #include "ParticleEngine.h"
 #include "Config.hpp"
+#include "StaticXORShift.hpp"
 
 void main()
 {
+	StaticXorShift::x = static_cast<unsigned long>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
 	sf::ContextSettings settings;
 	settings.majorVersion = 4;
 	settings.minorVersion = 4;
 	settings.antialiasingLevel = 8;
 
+	StaticXorShift::y = static_cast<unsigned long>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
 	sf::RenderWindow window(sf::VideoMode(Config::width, Config::height), "Particle Engine", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(Config::useVsync);
 	window.setFramerateLimit(60u);
+
+	StaticXorShift::z = static_cast<unsigned long>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
 	sf::Clock frameTimer;
 	float fpsDisplayDelay = 0.0f;

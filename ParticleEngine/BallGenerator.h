@@ -16,9 +16,11 @@ public:
 	void Render(sf::RenderWindow& window);
 
 private:
+	glm::vec2 GetRandomSpawnPoint();
+
 	//Start and Endpoint
 	glm::vec2 points[2];
-	glm::vec2 fanVec;
+	glm::vec2 spawnVector;
 	glm::vec2 spawnDirection;
 	float spawnVelocity;
 	float spawnTime;

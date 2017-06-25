@@ -40,6 +40,9 @@ ParticleEngine::ParticleEngine()
 	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 20);
 	m_blizzards.push_back(blizzard1);
 
+	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 5);
+	m_blizzards.push_back(blizzard2);
+
 	//Setting Up BallGenerator
 	BallGenerator ballGen1(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.15f), 10.0f);
 	m_ballGenerators.push_back(ballGen1);
@@ -102,6 +105,11 @@ void ParticleEngine::Render(sf::RenderWindow& window)
 		m_fans[i].Render(window);
 	}
 
+	for (size_t i = 0u; i < m_ballGenerators.size(); ++i)
+	{
+		m_ballGenerators[i].Render(window);
+	}
+
 	//Balls
 	for (size_t i = 0u; i < m_balls.size(); ++i)
 	{
@@ -162,7 +170,7 @@ void ParticleEngine::CheckCollisions()
 	{
 		for (size_t j = 0u; j < m_solids.size(); ++j)
 		{
-			if (m_particles[i].DoesCollideWithAABB(m_solids[j].aabb))
+			if (Collisions::PointBoxCollision(m_particles[i].position, m_solids[j].aabb))
 			{
 				//Collision with AABB!
 				if(Collisions::PointBoxCollision(m_solids[j].oobb, m_particles[i].position, contact))
@@ -177,7 +185,7 @@ void ParticleEngine::CheckCollisions()
 		//Check Balls
 		for (size_t j = 0u; j < m_balls.size(); ++j)
 		{
-			if(m_particles[i].DoesCollideWithSphere(m_balls[j].position, m_balls[j].radius + 1.0f))
+			if(Collisions::PointSphereCollision(m_particles[i].position, m_balls[j].position, m_balls[j].radius))
 			{
 				m_particles[i].toBeDeleted = true;
 			}
@@ -195,7 +203,7 @@ void ParticleEngine::CheckCollisions()
 		//Solids
 		for (size_t j = 0u; j < m_solids.size(); ++j)
 		{
-			if (m_balls[i].DoesCollideWithAABB(m_solids[j].aabb))
+			if (Collisions::SphereBoxCollision(m_balls[i].position, m_balls[i].radius, m_solids[j].aabb))
 			{
 				if(Collisions::SphereBoxCollision(m_balls[i].position, m_balls[i].radius, m_solids[j].oobb, contact))
 				{

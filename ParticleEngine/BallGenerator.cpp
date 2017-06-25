@@ -1,5 +1,6 @@
 ﻿#include "BallGenerator.h"
 #include "ParticleEngine.h"
+#include "StaticXORShift.hpp"
 
 BallGenerator::BallGenerator()
 {
@@ -7,7 +8,7 @@ BallGenerator::BallGenerator()
 	renderPoints.setPrimitiveType(sf::PrimitiveType::Lines);
 	points[0] = glm::vec2();
 	points[1] = glm::vec2();
-	fanVec = glm::vec2();
+	spawnVector = glm::vec2();
 	spawnVelocity = 0.0f;
 	spawnDirection = glm::vec2();
 	spawnTime = 0.0f;
@@ -20,10 +21,11 @@ BallGenerator::BallGenerator(const glm::vec2& start, const glm::vec2& end, float
 	points[0] = start;
 	points[1] = end;
 
-	fanVec = end - start;
-	spawnDirection.x = -fanVec.y;
-	spawnDirection.y = fanVec.x;
+	spawnVector = end - start;
+	spawnDirection.x = -spawnVector.y;
+	spawnDirection.y = spawnVector.x;
 	spawnDirection = glm::normalize(spawnDirection);
+	spawnVector = glm::normalize(spawnVector);
 
 	renderPoints.setPrimitiveType(sf::PrimitiveType::Lines);
 	renderPoints.resize(4);
@@ -52,7 +54,7 @@ BallGenerator::BallGenerator(const BallGenerator& other)
 	points[1] = other.points[1];
 
 	renderPoints = other.renderPoints;
-	fanVec = other.fanVec;
+	spawnVector = other.spawnVector;
 	spawnDirection = other.spawnDirection;
 	spawnTime = other.spawnTime;
 	spawnCooldown = other.spawnCooldown;
@@ -70,11 +72,8 @@ void BallGenerator::Update(float deltaTime, ParticleEngine& engine)
 	{
 		spawnTime -= spawnCooldown;
 
-		//find random Spawn position
-		glm::vec2 positon = points[0];
-
 		Ball ball;
-		ball.position = positon;
+		ball.position = GetRandomSpawnPoint();
 		ball.velocity = spawnDirection * spawnVelocity;
 
 		engine.AddBall(ball);
@@ -84,4 +83,9 @@ void BallGenerator::Update(float deltaTime, ParticleEngine& engine)
 void BallGenerator::Render(sf::RenderWindow& window)
 {
 	window.draw(renderPoints);
+}
+
+glm::vec2 BallGenerator::GetRandomSpawnPoint()
+{
+	return points[0] + (glm::distance(points[0], points[1]) * StaticXorShift::GetZeroToOne()) * spawnVector;
 }

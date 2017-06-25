@@ -74,5 +74,8 @@
     <ClInclude Include="BallGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StaticXORShift.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

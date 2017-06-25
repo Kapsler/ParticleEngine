@@ -40,22 +40,6 @@ void Particle::Integrate(float deltaTime)
 	acceleration.y = 0.0f;
 }
 
-bool Particle::DoesCollideWithAABB(Collisions::BoundingVolumes::AABB& aabb) const
-{
-	if (position.x > aabb.min.x && position.x < aabb.max.x
-	&&	position.y > aabb.min.y && position.y < aabb.max.y)
-	{
-		return true;
-	}
-
-	return false;
-}
-
- bool inline Particle::DoesCollideWithSphere(const glm::vec2& sphereCenter, const float sphereRadius) const
-{
-	return glm::distance(sphereCenter, position) <= sphereRadius;
-}
-
 void Particle::ResolveCollision(const Collisions::Contact& contact)
 {	
 	position += (contact.penetration + 0.5f) * contact.contactNormal;
