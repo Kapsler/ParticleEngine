@@ -335,7 +335,7 @@ namespace Collisions
 			return false;
 		}
 		
-		contact.contactNormal = saveNormalize(midline);
+		contact.contactNormal = -saveNormalize(midline);
 		contact.penetration = (sphere1Radius + sphere2Radius) - distance;
 
 		return true;

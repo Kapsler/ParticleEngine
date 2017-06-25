@@ -223,9 +223,9 @@ void ParticleEngine::CheckCollisions()
 		{
 			if (Collisions::SphereSphereCollision(m_balls[i].position, m_balls[i].radius, m_balls[j].position, m_balls[j].radius, contact))
 			{
-				contact.index = j;
-				m_ballContacts.push_back(contact);
 				contact.index = i;
+				m_ballContacts.push_back(contact);
+				contact.index = j;
 				contact.contactNormal *= -1.0f;
 				m_ballContacts.push_back(contact);
 			}
