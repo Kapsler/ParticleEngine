@@ -2,7 +2,7 @@
 
 Ball::Ball()
 {
-	radius = 10.0f;
+	radius = Config::ballSize;
 	mass = 10.0f;
 	bouncyness = 0.8f;
 }

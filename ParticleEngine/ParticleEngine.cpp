@@ -12,28 +12,30 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(centerPlatform);
 
 	//BottemLeft Platform
-	centerPlatform.SetRotation(45.0f);
-	centerPlatform.SetPosition(sf::Vector2f((float)Config::width * 0.1f, (float)Config::height * 0.8f));
-	m_solids.push_back(centerPlatform);
+	Solid leftBottomPlatform;
+	leftBottomPlatform.SetSize(sf::Vector2f((float)Config::width * 0.3f, (float)Config::height * 0.4f));
+	leftBottomPlatform.SetRotation(45.0f);
+	leftBottomPlatform.SetPosition(sf::Vector2f((float)Config::width * 0.0f, (float)Config::height));
+	m_solids.push_back(leftBottomPlatform);
 
 	//Left Wall
 	Solid wall; 
-	wall.SetSize(sf::Vector2f((float)Config::width* 0.05f, (float)Config::height));
-	wall.SetPosition(sf::Vector2f((float)Config::width * 0.0f, (float)Config::height * 0.50f));
+	wall.SetSize(sf::Vector2f((float)Config::width* 0.45f, (float)Config::height));
+	wall.SetPosition(sf::Vector2f((float)Config::width * -0.2f, (float)Config::height * 0.50f));
 	m_solids.push_back(wall);
 
 	//Right Wall
-	wall.SetPosition(sf::Vector2f((float)Config::width, (float)Config::height * 0.50f));
+	wall.SetPosition(sf::Vector2f((float)Config::width * 1.2f, (float)Config::height * 0.50f));
 	m_solids.push_back(wall);
 
 	//floor
 	Solid floor;
-	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.05f));
-	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height));
+	floor.SetSize(sf::Vector2f((float)Config::width, (float)Config::height * 0.45f));
+	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 1.2f));
 	m_solids.push_back(floor);
 
 	//ceiling
-	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * 0.0f));
+	floor.SetPosition(sf::Vector2f((float)Config::width * 0.5f, (float)Config::height * -0.2f));
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
@@ -51,6 +53,9 @@ ParticleEngine::ParticleEngine()
 	Fan fan1(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.35f), 10.0f);
 	m_fans.push_back(fan1);
 
+	Fan fan2(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.95f), glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.95f), 20.0f);
+	m_fans.push_back(fan2);
+
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
 	m_particleContacts.reserve(Config::maxParticleCount);
@@ -60,7 +65,7 @@ ParticleEngine::ParticleEngine()
 	renderCircle.setPointCount(15);
 	renderCircle.setRadius(1.0f);
 	renderCircle.setOrigin(renderCircle.getRadius(), renderCircle.getRadius());
-	renderCircle.setOutlineThickness(1.0f / 10.0f);
+	renderCircle.setOutlineThickness(1.0f / Config::ballSize);
 	renderCircle.setOutlineColor(sf::Color::Yellow);
 	renderCircle.setFillColor(sf::Color::Transparent);
 }
@@ -218,10 +223,10 @@ void ParticleEngine::CheckCollisions()
 		{
 			if (Collisions::SphereSphereCollision(m_balls[i].position, m_balls[i].radius, m_balls[j].position, m_balls[j].radius, contact))
 			{
-				contact.index = i;
-				m_ballContacts.push_back(contact);
 				contact.index = j;
-				contact.contactNormal *= -1;
+				m_ballContacts.push_back(contact);
+				contact.index = i;
+				contact.contactNormal *= -1.0f;
 				m_ballContacts.push_back(contact);
 			}
 		}

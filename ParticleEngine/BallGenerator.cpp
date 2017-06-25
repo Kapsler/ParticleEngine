@@ -44,7 +44,7 @@ BallGenerator::BallGenerator(const glm::vec2& start, const glm::vec2& end, float
 	renderPoints[3].color = sf::Color::Red;
 
 	spawnTime = 0.0f;
-	spawnCooldown = 1.0f;
+	spawnCooldown = 0.5f;
 }
 
 BallGenerator::BallGenerator(const BallGenerator& other)

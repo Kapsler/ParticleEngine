@@ -143,14 +143,11 @@ namespace Collisions
 	{
 		glm::vec2 normal = glm::normalize(vector);
 
-		if(normal.x == NAN || normal.y == NAN)
+		if(normal.x != normal.x || normal.y != normal.y)
 		{
 			normal.x = 0.0f;
 			normal.y = 0.0f;
 		}
-
-		assert(normal.x != NAN);
-		assert(normal.y != NAN);
 
 		return normal;
 	}
@@ -159,12 +156,10 @@ namespace Collisions
 	{
 		float length = glm::length(vector);
 
-		if (length == NAN)
+		if (length != length)
 		{
 			length = 0.0f;
 		}
-
-		assert(length != NAN);
 
 		return length;
 	}
@@ -173,12 +168,10 @@ namespace Collisions
 	{
 		float distance = glm::distance(p1, p2);
 
-		if (distance == NAN)
+		if (distance != distance)
 		{
 			distance = 0.0f;
 		}
-
-		assert(distance != NAN);
 
 		return distance;
 	}
@@ -317,7 +310,7 @@ namespace Collisions
 		closestPoint.y = distance;
 
 		//Contact Check
-		distance = saveLength(closestPoint - relCenter);
+		distance = saveDistance(closestPoint, relCenter);
 		if (distance < 0 || distance > sphereRadius)
 		{
 			return false;
