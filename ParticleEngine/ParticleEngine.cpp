@@ -39,10 +39,10 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
-	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 20);
+	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 75);
 	m_blizzards.push_back(blizzard1);
 
-	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 10);
+	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 75);
 	m_blizzards.push_back(blizzard2);
 
 	//Setting Up BallGenerator
@@ -165,6 +165,7 @@ void ParticleEngine::AddParticle(const Particle& particle)
 	{
 		m_particles.erase(m_particles.begin());
 	}
+
 	if (m_particleVertices.size() + 1 > Config::maxParticleCount)
 	{
 		m_particleVertices.erase(m_particleVertices.begin());
@@ -188,6 +189,16 @@ void ParticleEngine::AddBall(const Ball& ball)
 	}
 
 	m_balls.push_back(ball);
+}
+
+void ParticleEngine::GetInput(const sf::Event::MouseButtonEvent& e)
+{
+	if(e.button == sf::Mouse::Button::Left)
+	{
+		Ball b1;
+		b1.position = glm::vec2((float)e.x, (float)e.y);
+		AddBall(b1);
+	}
 }
 
 void ParticleEngine::AddSpringContraint(size_t p1Index, size_t p2Index)
@@ -278,7 +289,7 @@ void ParticleEngine::CheckCollisions()
 		//Check Balls
 		for (size_t j = 0u; j < m_balls.size(); ++j)
 		{
-			if(Collisions::PointSphereCollision(m_particles[i].position, m_balls[j].position, m_balls[j].radius))
+			if(Collisions::PointSphereCollision(m_particles[i].position, m_balls[j].position, m_balls[j].radius + 1.0f))
 			{
 				m_particles[i].toBeDeleted = true;
 			}
@@ -362,7 +373,8 @@ void ParticleEngine::CheckCollisions()
 				}
 			}
 		}
-
+		
+		//Cloth to cloth
 		for (size_t j = i; j < m_cloth.size(); ++j)
 		{
 			if (Collisions::SphereSphereCollision(m_cloth[i].position, m_cloth[i].radius, m_cloth[j].position, m_cloth[j].radius, contact))

@@ -22,6 +22,7 @@ void main()
 
 	sf::Clock frameTimer;
 	float fpsDisplayDelay = 0.0f;
+	float physicsUpdateCooldown = 0.0f;
 	ParticleEngine engine;
 
 	while (window.isOpen())
@@ -58,9 +59,26 @@ void main()
 					window.close();
 				}
 			}
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				engine.GetInput(event.mouseButton);
+			}
 		}
 
-		engine.Update(deltaTime);
+		if(Config::useFixedUpdate)
+		{
+			physicsUpdateCooldown -= deltaTime;
+			if (physicsUpdateCooldown <= 0.0f)
+			{
+				physicsUpdateCooldown = Config::fixedPhysicsUpdate;
+				engine.Update(Config::fixedPhysicsUpdate);
+			}
+		} else
+		{
+			engine.Update(deltaTime);
+		}
+		
+		
 
 
 		//Display

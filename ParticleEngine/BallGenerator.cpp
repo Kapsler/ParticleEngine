@@ -43,8 +43,8 @@ BallGenerator::BallGenerator(const glm::vec2& start, const glm::vec2& end, float
 	renderPoints[3].position.y = renderPoints[2].position.y + (spawnDirection.y * spawnVelocity);
 	renderPoints[3].color = sf::Color::Cyan;
 
-	spawnTime = 0.0f;
-	spawnCooldown = 0.5f;
+	spawnCooldown = 1.0f;
+	spawnTime = spawnCooldown;
 }
 
 BallGenerator::BallGenerator(const BallGenerator& other)

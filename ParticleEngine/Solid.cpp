@@ -2,7 +2,7 @@
 
 Solid::Solid()
 {
-	shape.setFillColor(sf::Color::Transparent);
+	shape.setFillColor(sf::Color::Red);
 	shape.setOutlineColor(sf::Color::Red);
 	shape.setOutlineThickness(1.0f);
 

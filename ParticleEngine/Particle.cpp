@@ -11,9 +11,11 @@ Particle::Particle()
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
 	mass = 1.0f;
-	bouncyness = 0.2f;
+	bounciness = 0.1f;
 	toBeDeleted = false;
-	state = NO_FRICTION;
+	inverseMass = 1.0f / mass;
+	staticFriction = 0.9f;
+	kinematicFriction = 0.7f;
 }
 
 Particle::Particle(const Particle& other)
@@ -23,9 +25,11 @@ Particle::Particle(const Particle& other)
 	oldPosition = other.oldPosition;
 	velocity = other.velocity;
 	acceleration = other.acceleration;
-	bouncyness = other.bouncyness;
+	bounciness = other.bounciness;
 	toBeDeleted = other.toBeDeleted;
-	state = other.state;
+	inverseMass = other.inverseMass;
+	staticFriction = other.staticFriction;
+	kinematicFriction = other.kinematicFriction;
 }
 
 Particle::~Particle()
@@ -42,25 +46,4 @@ void Particle::Integrate(float deltaTime)
 	acceleration.y = 0.0f;
 
 	
-}
-
-void Particle::Reflexion(const Collisions::Contact& contact)
-{	
-	float speed = Collisions::saveLength(velocity);
-
-	if (speed < 1e-3f)
-	{
-		state = STATIC_FRICTION;
-	}
-	//NormalKraft abfragen
-	else if (false)
-	{
-		state = KINEMATIC_FRICTION;
-	}
-	else
-	{
-		state = NO_FRICTION;
-	}
-
-
 }

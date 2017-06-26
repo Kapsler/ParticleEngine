@@ -1,5 +1,6 @@
 #pragma once
 #include "Particle.h"
+#include <glm/gtx/projection.hpp>
 
 namespace ForceGenerators
 {
@@ -46,8 +47,48 @@ namespace ForceGenerators
 	{
 		particle.position += (contact.penetration + 0.5f) * contact.contactNormal;
 
-		particle.acceleration += -((1.0f + particle.bouncyness) * glm::dot(particle.velocity, contact.contactNormal)) * contact.contactNormal;
+		glm::vec2 relativeAcceleration = -((1.0f + particle.bounciness) * glm::dot(particle.velocity, contact.contactNormal)) * contact.contactNormal;
 
+		particle.acceleration += relativeAcceleration;
+
+		glm::vec2 normalVelocity = glm::proj(particle.velocity, -contact.contactNormal);
+		if (Collisions::saveLength(normalVelocity) > 100.0f)
+		{
+			return;
+		}
+
+		glm::vec2 relativeVelocity = glm::vec2(0.0f) - particle.velocity;
+		float velocityAlongNormal = glm::dot(relativeVelocity, contact.contactNormal);
+
+		float j = -(1 + particle.bounciness) * velocityAlongNormal;
+
+		relativeVelocity = glm::vec2(0.0f) - particle.velocity;
+		glm::vec2 tangent;
+		if (relativeVelocity.x * contact.contactNormal.y - relativeVelocity.y * contact.contactNormal.x < 0.0f)
+		{
+			tangent = glm::vec2(-contact.contactNormal.y, contact.contactNormal.x);
+		}
+		else
+		{
+			tangent = glm::vec2(contact.contactNormal.y, -contact.contactNormal.x);
+		}
+
+		float jt = -glm::dot(relativeVelocity, tangent);
+
+		// clamp friction and differentiate between static and kinetic friction
+		glm::vec2 frictionImpulse;
+		if (abs(jt) < j * particle.staticFriction)
+		{
+			// static friction
+			frictionImpulse = jt * tangent;
+		}
+		else
+		{
+			// kinematic friction
+			frictionImpulse = -j * tangent * particle.kinematicFriction;
+		}
+
+		particle.velocity +=/* particle->inverseMass **/ frictionImpulse;
 	}
 
 	static void ResolveCollision(Particle& p1, Particle& p2, const Collisions::Contact& contact)
@@ -59,7 +100,7 @@ namespace ForceGenerators
 		normalStrength += p2.velocity.x * -contact.contactNormal.x + p2.velocity.y * -contact.contactNormal.y;
 		normalStrength *= 0.5f;
 
-		p1.acceleration -=  2.0f * p1.bouncyness * (normalStrength * contact.contactNormal);
-		p2.acceleration -=  2.0f * p2.bouncyness * (normalStrength * -contact.contactNormal);
+		p1.acceleration -=  2.0f * p1.bounciness * (normalStrength * contact.contactNormal);
+		p2.acceleration -=  2.0f * p2.bounciness * (normalStrength * -contact.contactNormal);
 	}
 }

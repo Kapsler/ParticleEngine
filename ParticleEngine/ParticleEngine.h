@@ -20,6 +20,7 @@ public:
 	void Render(sf::RenderWindow& window);
 	void AddParticle(const Particle& particle);
 	void AddBall(const Ball& ball);
+	void GetInput(const sf::Event::MouseButtonEvent& e);
 
 private:
 	void AddSpringContraint(size_t p1Index, size_t p2Index);
