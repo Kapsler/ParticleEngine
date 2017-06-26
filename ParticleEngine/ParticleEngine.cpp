@@ -39,10 +39,10 @@ ParticleEngine::ParticleEngine()
 	m_solids.push_back(floor);
 
 	//Setting up blizzards
-	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 75);
+	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 25);
 	m_blizzards.push_back(blizzard1);
 
-	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 75);
+	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 25);
 	m_blizzards.push_back(blizzard2);
 
 	//Setting Up BallGenerator
@@ -454,31 +454,28 @@ void ParticleEngine::DeleteParticles()
 
 void ParticleEngine::ResolveCollisions()
 {
-	for(size_t i = 0u; i < m_particleReflexions.size(); ++i)
+
+	for (size_t i = 0u; i < m_particleReflexions.size(); ++i)
 	{
 		ForceGenerators::ApplyReflexion(m_particles[m_particleReflexions[i].index], m_particleReflexions[i]);
 	}
-
-	m_particleReflexions.clear();
-
+	
 	for (size_t i = 0u; i < m_ballReflexions.size(); ++i)
 	{
 		ForceGenerators::ApplyReflexion(m_balls[m_ballReflexions[i].index], m_ballReflexions[i]);
 	}
 
-	m_ballReflexions.clear();
-
 	for (size_t i = 0u; i < m_clothReflexions.size(); ++i)
 	{
-		ForceGenerators::ApplyReflexion(m_cloth[m_clothReflexions[i].index], m_clothReflexions[i]);
-	}
-
-	m_clothReflexions.clear();
+	ForceGenerators::ApplyReflexion(m_cloth[m_clothReflexions[i].index], m_clothReflexions[i]);
+	}	
 
 	for (size_t i = 0u; i < m_particleCollisions.size(); ++i)
 	{
 		ForceGenerators::ResolveCollision(*m_particleCollisions[i].p1, *m_particleCollisions[i].p2, m_particleCollisions[i].contact);
 	}
-
+	m_particleReflexions.clear();
+	m_ballReflexions.clear();
+	m_clothReflexions.clear();
 	m_particleCollisions.clear();
 }

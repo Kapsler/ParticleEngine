@@ -11,7 +11,7 @@ Particle::Particle()
 	acceleration.x = 0.0f;
 	acceleration.y = 0.0f;
 	mass = 1.0f;
-	bounciness = 0.1f;
+	bounciness = 0.25f;
 	toBeDeleted = false;
 	inverseMass = 1.0f / mass;
 	staticFriction = 0.9f;
