@@ -4,13 +4,20 @@
 
 struct Particle
 {
+	enum FrictionState
+	{
+		STATIC_FRICTION,
+		KINEMATIC_FRICTION,
+		NO_FRICTION
+	};
+
 	Particle();
 	Particle(const Particle& other);
 	virtual ~Particle();
 
 	void Integrate(float deltaTime);
 
-	void ResolveCollision(const Collisions::Contact& contact);
+	void Reflexion(const Collisions::Contact& contact);
 
 	glm::vec2 oldPosition;
 	glm::vec2 position;
@@ -19,4 +26,5 @@ struct Particle
 	float mass;
 	float bouncyness;
 	bool toBeDeleted : 1;
+	FrictionState state;
 };

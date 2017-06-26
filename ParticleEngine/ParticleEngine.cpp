@@ -42,7 +42,7 @@ ParticleEngine::ParticleEngine()
 	Blizzard blizzard1(glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.25f), 20);
 	m_blizzards.push_back(blizzard1);
 
-	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 5);
+	Blizzard blizzard2(glm::vec2((float)Config::width * 0.25f, (float)Config::height * 0.25f), 10);
 	m_blizzards.push_back(blizzard2);
 
 	//Setting Up BallGenerator
@@ -53,13 +53,15 @@ ParticleEngine::ParticleEngine()
 	Fan fan1(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.15f), glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.35f), 10.0f);
 	m_fans.push_back(fan1);
 
-	Fan fan2(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.95f), glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.95f), 20.0f);
+	Fan fan2(glm::vec2((float)Config::width * 0.95f, (float)Config::height * 0.99f), glm::vec2((float)Config::width * 0.75f, (float)Config::height * 0.99f), 20.0f);
 	m_fans.push_back(fan2);
 
 	m_particleVertices.reserve(Config::maxParticleCount);
 	m_particles.reserve(Config::maxParticleCount);
-	m_particleContacts.reserve(Config::maxParticleCount);
-	m_ballContacts.reserve(Config::maxBallCount * Config::maxBallCount + Config::maxBallCount * m_solids.size());
+	m_particleReflexions.reserve(Config::maxParticleCount);
+	m_ballReflexions.reserve(Config::maxBallCount * m_solids.size());
+	m_particleCollisions.reserve(Config::maxBallCount * Config::maxBallCount + Config::clothColumns * Config::clothRows);
+	m_clothReflexions.reserve(Config::clothColumns * Config::clothRows);
 
 	//Setting Up Rendering Stuff
 	renderCircle.setPointCount(15);
@@ -69,7 +71,7 @@ ParticleEngine::ParticleEngine()
 	renderCircle.setOutlineColor(sf::Color::Yellow);
 	renderCircle.setFillColor(sf::Color::Transparent);
 
-	GenerateCloth(10.0f, glm::vec2((float)Config::width * 0.15f, (float)Config::height * 0.05f), 5.0f);
+	GenerateCloth(10.0f, glm::vec2((float)Config::width * 0.15f, (float)Config::height * 0.45f), 5.0f);
 }
 
 ParticleEngine::~ParticleEngine()
@@ -118,7 +120,7 @@ void ParticleEngine::Render(sf::RenderWindow& window)
 	}
 
 	//Cloth
-	for (size_t i = 0u; i < m_cloth.size(); ++i)
+	for (size_t i = Config::clothColumns; i < m_cloth.size(); ++i)
 	{
 		renderCircle.setPosition(m_cloth[i].position.x, m_cloth[i].position.y);
 		renderCircle.setScale(m_cloth[i].radius, m_cloth[i].radius);
@@ -196,7 +198,7 @@ void ParticleEngine::AddSpringContraint(size_t p1Index, size_t p2Index)
 		s.p1 = &m_cloth[p1Index];
 		s.p2 = &m_cloth[p2Index];
 		s.restLength = Collisions::saveDistance(m_cloth[p1Index].position, m_cloth[p2Index].position);
-		s.stiffness = 1.5f;
+		s.stiffness = 2.0f;
 		m_springs.push_back(s);
 	}
 }
@@ -254,6 +256,7 @@ void ParticleEngine::GenerateCloth(const float ballRadius, const glm::vec2& star
 
 void ParticleEngine::CheckCollisions()
 {
+	ForceGenerators::ParticleCollision collision;
 	Collisions::Contact contact;
 
 	for (size_t i = 0u; i < m_particles.size(); ++i)
@@ -267,7 +270,7 @@ void ParticleEngine::CheckCollisions()
 				{
 					//OOBB Collision!
 					contact.index = i;
-					m_particleContacts.push_back(contact);
+					m_particleReflexions.push_back(contact);
 				}
 			}
 		}
@@ -282,7 +285,7 @@ void ParticleEngine::CheckCollisions()
 		}
 
 		//Check Cloth
-		for (size_t j = 0u; j < m_cloth.size(); ++j)
+		for (size_t j = Config::clothColumns; j < m_cloth.size(); ++j)
 		{
 			if (Collisions::PointSphereCollision(m_particles[i].position, m_cloth[j].position, m_cloth[j].radius))
 			{
@@ -307,7 +310,7 @@ void ParticleEngine::CheckCollisions()
 				if(Collisions::SphereBoxCollision(m_balls[i].position, m_balls[i].radius, m_solids[j].oobb, contact))
 				{
 					contact.index = i;
-					m_ballContacts.push_back(contact);
+					m_ballReflexions.push_back(contact);
 				}
 			}
 		}
@@ -317,21 +320,23 @@ void ParticleEngine::CheckCollisions()
 		{
 			if (Collisions::SphereSphereCollision(m_balls[i].position, m_balls[i].radius, m_balls[j].position, m_balls[j].radius, contact))
 			{
-				contact.index = i;
-				m_ballContacts.push_back(contact);
-				contact.index = j;
-				contact.contactNormal *= -1.0f;
-				m_ballContacts.push_back(contact);
+				collision.p1 = &m_balls[i];
+				collision.p2 = &m_balls[j];
+				collision.contact = contact;
+				m_particleCollisions.push_back(collision);
 			}
 		}
 
 		//Check Cloth
-		for (size_t j = 0u; j < m_cloth.size(); ++j)
+		for (size_t j = Config::clothColumns; j < m_cloth.size(); ++j)
 		{
 			if (Collisions::SphereSphereCollision(m_balls[i].position, m_balls[i].radius, m_cloth[j].position, m_cloth[j].radius, contact))
 			{
-				contact.index = i;
-				m_ballContacts.push_back(contact);
+
+				collision.p1 = &m_balls[i];
+				collision.p2 = &m_cloth[j];
+				collision.contact = contact;
+				m_particleCollisions.push_back(collision);
 			}
 		}
 
@@ -353,7 +358,7 @@ void ParticleEngine::CheckCollisions()
 				if (Collisions::SphereBoxCollision(m_cloth[i].position, m_cloth[i].radius, m_solids[j].oobb, contact))
 				{
 					contact.index = i;
-					m_clothContacts.push_back(contact);
+					m_clothReflexions.push_back(contact);
 				}
 			}
 		}
@@ -362,12 +367,11 @@ void ParticleEngine::CheckCollisions()
 		{
 			if (Collisions::SphereSphereCollision(m_cloth[i].position, m_cloth[i].radius, m_cloth[j].position, m_cloth[j].radius, contact))
 			{
-				contact.index = i;
-				m_clothContacts.push_back(contact);
+				collision.p1 = &m_cloth[i];
+				collision.p2 = &m_cloth[j];
+				collision.contact = contact;
+				m_particleCollisions.push_back(collision);
 
-				contact.index = j;
-				contact.contactNormal *= -1.0f;
-				m_clothContacts.push_back(contact);
 			}
 		}
 
@@ -438,24 +442,31 @@ void ParticleEngine::DeleteParticles()
 
 void ParticleEngine::ResolveCollisions()
 {
-	for(size_t i = 0u; i < m_particleContacts.size(); ++i)
+	for(size_t i = 0u; i < m_particleReflexions.size(); ++i)
 	{
-		m_particles[m_particleContacts[i].index].ResolveCollision(m_particleContacts[i]);
+		ForceGenerators::ApplyReflexion(m_particles[m_particleReflexions[i].index], m_particleReflexions[i]);
 	}
 
-	m_particleContacts.clear();
+	m_particleReflexions.clear();
 
-	for (size_t i = 0u; i < m_ballContacts.size(); ++i)
+	for (size_t i = 0u; i < m_ballReflexions.size(); ++i)
 	{
-		m_balls[m_ballContacts[i].index].ResolveCollision(m_ballContacts[i]);
+		ForceGenerators::ApplyReflexion(m_balls[m_ballReflexions[i].index], m_ballReflexions[i]);
 	}
 
-	m_ballContacts.clear();
+	m_ballReflexions.clear();
 
-	for (size_t i = 0u; i < m_clothContacts.size(); ++i)
+	for (size_t i = 0u; i < m_clothReflexions.size(); ++i)
 	{
-		m_cloth[m_clothContacts[i].index].ResolveCollision(m_clothContacts[i]);
+		ForceGenerators::ApplyReflexion(m_cloth[m_clothReflexions[i].index], m_clothReflexions[i]);
 	}
 
-	m_clothContacts.clear();
+	m_clothReflexions.clear();
+
+	for (size_t i = 0u; i < m_particleCollisions.size(); ++i)
+	{
+		ForceGenerators::ResolveCollision(*m_particleCollisions[i].p1, *m_particleCollisions[i].p2, m_particleCollisions[i].contact);
+	}
+
+	m_particleCollisions.clear();
 }

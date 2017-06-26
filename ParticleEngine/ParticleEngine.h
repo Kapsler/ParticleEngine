@@ -12,6 +12,7 @@
 class ParticleEngine
 {
 public:
+
 	ParticleEngine();
 	~ParticleEngine();
 
@@ -44,9 +45,10 @@ private:
 	std::vector<ForceGenerators::SpringContraint> m_springs;
 
 	//Collisions
-	std::vector<Collisions::Contact> m_particleContacts;
-	std::vector<Collisions::Contact> m_ballContacts;
-	std::vector<Collisions::Contact> m_clothContacts;
+	std::vector<Collisions::Contact> m_particleReflexions;
+	std::vector<Collisions::Contact> m_ballReflexions;
+	std::vector<Collisions::Contact> m_clothReflexions;
+	std::vector<ForceGenerators::ParticleCollision> m_particleCollisions;
 
 	//Rendering Stuff
 	std::vector<sf::Vertex> m_particleVertices;

@@ -4,7 +4,7 @@ namespace Config
 {
 	const static unsigned int width = 1600;
 	const static unsigned int height = 900;
-	const static size_t maxParticleCount = 10000;
+	const static size_t maxParticleCount = 500000;
 	const static size_t maxBallCount = 50;
 	const static size_t clothColumns = 5;
 	const static size_t clothRows = 5;
