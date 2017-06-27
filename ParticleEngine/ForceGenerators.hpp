@@ -40,7 +40,7 @@ namespace ForceGenerators
 		float force = -stiffness * (currentLength - restLength);
 
 		p1.acceleration += force * -direction;
-		p2.acceleration += -force * -direction;
+		p2.acceleration += force * direction;
 	}
 
 	static void ApplyReflexion(Particle& particle, const Collisions::Contact& contact)
